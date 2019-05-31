@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restplus import Resource, Api, reqparse
 import pandas as pd
 from flask import send_file
+from flask_cors import CORS
 import os
 
 # Importing custom modules:
@@ -12,12 +13,13 @@ import endpoint_utils as epu
 
 app = Flask(__name__)
 api = Api(app)
+cors = CORS(app)
 
 parser = api.parser()
 parser.add_argument('submissionId', type=int, required=True, help='Submission ID.')
 parser.add_argument('fileName', type=str, required=True, help='Uploaded file name.')
 
-@api.route('/upload')
+@api.route('/validation')
 class HandleUploadedFile(Resource):
     def get(self):
         args = parser.parse_args()
@@ -25,6 +27,24 @@ class HandleUploadedFile(Resource):
             'submissionId' : args['submissionId'],
             'fileName' : args['fileName']
         }
+
+        # # Testing for file:
+        # if not file_exist:
+        #     return {}
+        #
+        # # Testing for opening:
+        # try:
+        #     open send_file()
+        # except:
+        #     return {"cicaful"}
+        #
+        # # Testing for available sheets:
+        #
+        #
+        # # Start validation process:
+        #
+        #
+        # return response
 
 @app.route('/templates/')
 def returnTemplate():

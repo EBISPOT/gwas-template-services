@@ -1,7 +1,7 @@
 name: template_serv
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - defaults
 dependencies:
   - aniso8601=6.0.0
@@ -13,6 +13,7 @@ dependencies:
   - click=7.0
   - cryptography=2.6.1
   - flask=1.0.3
+  - flask-cors=3.0.7
   - flask-jwt-extended=3.18.2
   - flask-restplus=0.11.0
   - gunicorn=19.9.0
@@ -25,7 +26,7 @@ dependencies:
   - libcxx=8.0.0
   - libcxxabi=8.0.0
   - libffi=3.2.1
-  - libgfortran=3.0.1
+  - libgfortran=3.0.0
   - liblapack=3.8.0
   - markupsafe=1.1.1
   - ncurses=6.1
