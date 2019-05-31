@@ -64,10 +64,11 @@ def returnTemplate():
     spreadsheet_builder = SpreadsheetBuilder()
     spreadsheet_builder.generate_workbook(inputDataFrames)
     x = spreadsheet_builder.save_workbook()
+    x.seek(0)
 
     # The spreadsheet is returned as bytestream:
     return send_file(
-        x.seek(0),
+        x,
         as_attachment=True,
         attachment_filename='template.xlsx',
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
