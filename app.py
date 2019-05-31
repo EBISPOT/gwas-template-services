@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restplus import Resource, Api
+from flask_restplus import Resource, Api, reqparse
 import pandas as pd
 from flask import send_file
 import os
@@ -13,6 +13,18 @@ import endpoint_utils as epu
 app = Flask(__name__)
 api = Api(app)
 
+parser = api.parser()
+parser.add_argument('submissionId', type=int, required=True, help='Submission ID.')
+parser.add_argument('fileName', type=str, required=True, help='Uploaded file name.')
+
+@api.route('/upload')
+class HandleUploadedFile(Resource):
+    def get(self):
+        args = parser.parse_args()
+        return {
+            'submissionId' : args['submissionId'],
+            'fileName' : args['fileName']
+        }
 
 @app.route('/templates/')
 def returnTemplate():
