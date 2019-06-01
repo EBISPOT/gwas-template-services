@@ -8,8 +8,10 @@ import os
 # Importing custom modules:
 from ingest.template.spreadsheet_builder import SpreadsheetBuilder
 from ingest.template.schemaJson_builder import jsonSchemaBuilder
+from ingest.validation.validator import open_template, check_study_tags
 
 import endpoint_utils as epu
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -19,33 +21,67 @@ parser = api.parser()
 parser.add_argument('submissionId', type=int, required=True, help='Submission ID.')
 parser.add_argument('fileName', type=str, required=True, help='Uploaded file name.')
 
+# Location for the uploaded files - will be read from a config file
+dir_path = os.path.dirname(os.path.realpath(__file__))
+filePath = '{}/uploadedTemplates'.format(dir_path)
+
 @api.route('/validation')
 class HandleUploadedFile(Resource):
     def get(self):
+
+        # Extracting parameters:
         args = parser.parse_args()
+        submissionId = args['submissionId']
+        fileName = args['fileName']
+
+        # If the file is not found:
+        if not os.path.isfile('{}/{}'.format(filePath, fileName)):
+            return {
+                "status" : "failed",
+                "message" : "Uploaded file was not found"
+            }
+
+        # Testing for opening:
+        try:
+            template_xlsx = pd.ExcelFile('{}/{}'.format(filePath, fileName))
+        except:
+            return {
+                "status" : "failed",
+                "message" : "Uploaded file could not be opened as an excel file."
+            }
+
+        # Try to open all sheets:
+        spread_sheets = {}
+        missing_sheets = []
+
+        for sheet in  ['studies', 'associations', 'samples']:
+            try:
+                spread_sheets[sheet] = open_template(template_xlsx, sheet)
+            except:
+                missing_sheets.append(sheet)
+
+        if len(missing_sheets) > 0:
+            return {
+                    "status": "failed",
+                    "message": "Some sheets were missing from the file",
+                    "missingSheets": missing_sheets
+                }
+
+        # Check for study tags:
+        missing_tags = check_study_tags(spread_sheets)
+
+        if len(missing_tags) > 0:
+            return {
+                "status": "failed",
+                "message": "Some study tags were not listed in the study sheet.",
+                "missingTags": missing_tags
+            }
         return {
-            'submissionId' : args['submissionId'],
-            'fileName' : args['fileName']
+            "status": "success",
+            "message": "First round of validation passed."
         }
 
-        # # Testing for file:
-        # if not file_exist:
-        #     return {}
-        #
-        # # Testing for opening:
-        # try:
-        #     open send_file()
-        # except:
-        #     return {"cicaful"}
-        #
-        # # Testing for available sheets:
-        #
-        #
-        # # Start validation process:
-        #
-        #
-        # return response
-
+# Non-REST endpoint for providing the templates:
 @app.route('/templates/')
 def returnTemplate():
 
@@ -101,8 +137,6 @@ class Schemas(Resource):
         schema = jsonSchemaBuilder(schema_name)
         schema.addTable(self.inputFiles[schema_name])
         return schema.get_schema()
-
-
 
 @api.route('/hello')
 class HelloWorld(Resource):

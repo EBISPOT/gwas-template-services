@@ -1,9 +1,9 @@
 import pandas as pd
 import sys
-sys.path.insert(0,'/homes/dsuveges/Project/gwas-ingest/ingest/template/')
-from spreadsheet_builder import SpreadsheetBuilder 
-from schemaJson_builder import jsonSchemaBuilder
-from collections import OrderedDict
+# sys.path.insert(0,'/homes/dsuveges/Project/gwas-ingest/ingest/template/')
+from ingest.template.spreadsheet_builder import SpreadsheetBuilder
+# from ingest.template.schemaJson_builder import jsonSchemaBuilder
+# from collections import OrderedDict
 import numpy as np
 import datetime  
 import re
@@ -174,3 +174,39 @@ class validator(object):
     
     def __len__(self):
         return(len(self.uploadedData))
+
+# This function reads a sheet of the template file as pandas dataframe:
+def open_template(template_xlsx, sheetName):
+
+    # Reading excel file, -> add test
+    templateDf = pd.read_excel(template_xlsx, sheetName, header=1)
+
+    # Extract data marker:
+    builderObj = SpreadsheetBuilder('dummy')
+    dataMarker = builderObj.dataMarker
+
+    # Testing at which row has the fill information:
+    idx = templateDf.index[templateDf['Study tag'] == dataMarker].tolist()[0]
+    templateDf = templateDf.loc[idx + 1:]
+
+    return (templateDf)
+
+# This function checks for inconsistencies in study tags:
+def check_study_tags(spread_sheets):
+
+    # Inconsistent tags are collected in a dictionary:
+    inconsitent_tags = {}
+
+    for sheet in ['associations', 'samples']:
+        tags = spread_sheets[sheet]['Study tag'].unique()
+        for tag in tags:
+            print(tag)
+            print(spread_sheets['studies']['Study tag'])
+            if not tag in spread_sheets['studies']['Study tag'].tolist():
+                try:
+                    inconsitent_tags[sheet].append(tag)
+                except:
+                    inconsitent_tags[sheet] = [tag]
+
+    return inconsitent_tags
+
