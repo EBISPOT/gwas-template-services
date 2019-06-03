@@ -5,11 +5,15 @@ from flask import send_file
 from flask_cors import CORS
 import os
 from werkzeug.datastructures import FileStorage
+import sys
 
 # Importing custom modules:
 from ingest.template.spreadsheet_builder import SpreadsheetBuilder
 from ingest.template.schemaJson_builder import jsonSchemaBuilder
 from ingest.validation.validator import open_template, check_study_tags
+from config.config import Configuration
+
+# import endpoint_utils as create_ftp_directories
 
 app = Flask(__name__)
 api = Api(app)
@@ -22,69 +26,45 @@ parser.add_argument('fileName', type=str, required=True, help='Uploaded file nam
 file_upload = api.parser()
 file_upload.add_argument('templateFile', type=FileStorage, location='files', required=True, help='Filled out template excel file.')
 file_upload.add_argument('submissionId', type=int, required=True, help='Submission ID.')
-
-# Location for the uploaded files - will be read from a config file
-dir_path = os.path.dirname(os.path.realpath(__file__))
-filePath = '{}/uploadedTemplates'.format(dir_path)
+file_upload.add_argument('fileName', type=str, required=True, help='Upload template file name.')
 
 # curl -v -X POST -F submissionId=123123 -F file=@uploadedTemplates/template_testUpload.xlsx http://localhost:9000/upload
 @api.route('/upload')
 @api.expect(file_upload, validate=True)
 class TemplateUploader(Resource):
     def post(self):
+
         # Extract parameters:
         args = file_upload.parse_args()
         xlsx_file = args['templateFile']
-        submissionID = args['submissionId']
+        submissionId = args['submissionId']
+        xlsx_fileName = args['fileName']
 
-        # Handling file:
+        filePath = '{}/{}'.format(Configuration.uploadFolder, submissionId)
+
+        # Does folder exists:
+        if not os.path.exists(filePath):
+            try:
+                os.mkdir(filePath)
+            except:
+                return {'status' : 'failed', 'message' : 'Submission folder ({}) could not be created.'.format(submissionId)}
+
+        # Is that a folder:
+        if not os.path.isdir(filePath):
+            return {'status': 'failed', 'message': 'Submission folder ({}) is not a directory.'.format(submissionId)}
+
+        # Try saving the file:
         try:
-            # Saving file:
-            xlsx_file.save('{}/{}'.format(filePath, 'templates.xlsx'))
-            template_xlsx = pd.ExcelFile('{}/{}'.format(filePath, 'templates.xlsx'))
+            xlsx_file.save('{}/{}'.format(filePath, xlsx_fileName))
+            return {'status': 'success', 'message' : 'File successfully uploaded.'}
 
         except:
             return {
                 "status": "failed",
-                "submissionId" : submissionID,
-                "message": "Uploaded file could not be opened as an excel file."
+                "message": "Couldn't save uploaded file."
             }
 
-        # Try to open all sheets:
-        spread_sheets = {}
-        missing_sheets = []
-
-        for sheet in ['studies', 'associations', 'samples']:
-            try:
-                spread_sheets[sheet] = open_template(template_xlsx, sheet)
-            except:
-                missing_sheets.append(sheet)
-
-        if len(missing_sheets) > 0:
-            return {
-                "status": "failed",
-                "submissionId": submissionID,
-                "message": "Some sheets were missing from the file",
-                "missingSheets": missing_sheets
-            }
-
-        # Check for study tags:
-        missing_tags = check_study_tags(spread_sheets)
-
-        if len(missing_tags) > 0:
-            return {
-                "status": "failed",
-                "submissionId": submissionID,
-                "message": "Some study tags were not listed in the study sheet.",
-                "missingTags": missing_tags
-            }
-        return {
-            "status": "success",
-            "submissionId": submissionID,
-            "message": "First round of validation passed."
-        }
-
-
+# This function calls validation for a file uploaded and the file is given as a parameter:
 @api.route('/validation')
 class HandleUploadedFile(Resource):
     def get(self):
@@ -94,8 +74,11 @@ class HandleUploadedFile(Resource):
         submissionId = args['submissionId']
         fileName = args['fileName']
 
+        # File with path:
+        xlsxFilePath = '{}/{}/{}'.format(Configuration.uploadFolder, submissionId, fileName)
+
         # If the file is not found:
-        if not os.path.isfile('{}/{}'.format(filePath, fileName)):
+        if not os.path.isfile(xlsxFilePath):
             return {
                 "status" : "failed",
                 "message" : "Uploaded file was not found"
@@ -103,7 +86,7 @@ class HandleUploadedFile(Resource):
 
         # Testing for opening:
         try:
-            template_xlsx = pd.ExcelFile('{}/{}'.format(filePath, fileName))
+            template_xlsx = pd.ExcelFile(xlsxFilePath)
         except:
             return {
                 "status" : "failed",
