@@ -4,14 +4,12 @@ import pandas as pd
 from flask import send_file
 from flask_cors import CORS
 import os
+from werkzeug.datastructures import FileStorage
 
 # Importing custom modules:
 from ingest.template.spreadsheet_builder import SpreadsheetBuilder
 from ingest.template.schemaJson_builder import jsonSchemaBuilder
 from ingest.validation.validator import open_template, check_study_tags
-
-import endpoint_utils as epu
-
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,9 +19,71 @@ parser = api.parser()
 parser.add_argument('submissionId', type=int, required=True, help='Submission ID.')
 parser.add_argument('fileName', type=str, required=True, help='Uploaded file name.')
 
+file_upload = api.parser()
+file_upload.add_argument('templateFile', type=FileStorage, location='files', required=True, help='Filled out template excel file.')
+file_upload.add_argument('submissionId', type=int, required=True, help='Submission ID.')
+
 # Location for the uploaded files - will be read from a config file
 dir_path = os.path.dirname(os.path.realpath(__file__))
 filePath = '{}/uploadedTemplates'.format(dir_path)
+
+# curl -v -X POST -F submissionId=123123 -F file=@uploadedTemplates/template_testUpload.xlsx http://localhost:9000/upload
+@api.route('/upload')
+@api.expect(file_upload, validate=True)
+class TemplateUploader(Resource):
+    def post(self):
+        # Extract parameters:
+        args = file_upload.parse_args()
+        xlsx_file = args['templateFile']
+        submissionID = args['submissionId']
+
+        # Handling file:
+        try:
+            # Saving file:
+            xlsx_file.save('{}/{}'.format(filePath, 'templates.xlsx'))
+            template_xlsx = pd.ExcelFile('{}/{}'.format(filePath, 'templates.xlsx'))
+
+        except:
+            return {
+                "status": "failed",
+                "submissionId" : submissionID,
+                "message": "Uploaded file could not be opened as an excel file."
+            }
+
+        # Try to open all sheets:
+        spread_sheets = {}
+        missing_sheets = []
+
+        for sheet in ['studies', 'associations', 'samples']:
+            try:
+                spread_sheets[sheet] = open_template(template_xlsx, sheet)
+            except:
+                missing_sheets.append(sheet)
+
+        if len(missing_sheets) > 0:
+            return {
+                "status": "failed",
+                "submissionId": submissionID,
+                "message": "Some sheets were missing from the file",
+                "missingSheets": missing_sheets
+            }
+
+        # Check for study tags:
+        missing_tags = check_study_tags(spread_sheets)
+
+        if len(missing_tags) > 0:
+            return {
+                "status": "failed",
+                "submissionId": submissionID,
+                "message": "Some study tags were not listed in the study sheet.",
+                "missingTags": missing_tags
+            }
+        return {
+            "status": "success",
+            "submissionId": submissionID,
+            "message": "First round of validation passed."
+        }
+
 
 @api.route('/validation')
 class HandleUploadedFile(Resource):
