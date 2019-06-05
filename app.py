@@ -130,8 +130,14 @@ class HandleUploadedFile(Resource):
                 "message": "Some study tags were not listed in the study sheet.",
                 "missingTags": missing_tags
             }
+
+        # File looks good. Update DB:
         eu.updateFileValidation(submissionId=submissionId, status=1,
                                 message="First round of validation passed.")
+        # Generate ftp directories:
+        eu.generateFtpFolders(submissionId, spread_sheets['studies']['Study tag'].tolist())
+
+        # Return success;
         return {
             "status": "success",
             "message": "First round of validation passed."

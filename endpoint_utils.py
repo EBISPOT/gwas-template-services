@@ -5,7 +5,29 @@ import requests
 
 # Function to generate folders under ftp:
 def generateFtpFolders(submissionId, studyTags):
-    ftp = FTP(conf.FTP['ftpServer'])
+    server = conf.FTP['ftpServer']
+    user = conf.FTP['ftpUser']
+    passwd = conf.FTP['ftpPassword']
+
+    with FTP(host=server) as ftp:
+        ftp.login(user=user, passwd=passwd)
+
+        # Creating folder for the submission:
+        try:
+            ftp.cwd('deposition/{}'.format(submissionId))
+        except:
+            ftp.mkd('deposition/{}'.format(submissionId))
+            ftp.cwd('deposition/{}'.format(submissionId))
+
+        # Try to create folders for all stdy tags:
+        for tag in studyTags:
+            try:
+                ftp.mkd(tag.replace(" ", "_"))
+            except:
+                pass
+
+        # Get a list of folders:
+        # TODO: check if all tags were created.
 
 
 def updateFileValidation(submissionId, status, message):
