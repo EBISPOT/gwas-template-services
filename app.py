@@ -12,6 +12,7 @@ from ingest.template.spreadsheet_builder import SpreadsheetBuilder
 from ingest.template.schemaJson_builder import jsonSchemaBuilder
 from ingest.validation.validator import open_template, check_study_tags
 from config.config import Configuration
+import endpoint_utils as eu
 
 # import endpoint_utils as create_ftp_directories
 
@@ -56,7 +57,11 @@ class TemplateUploader(Resource):
         # Try saving the file:
         try:
             xlsx_file.save('{}/{}'.format(filePath, xlsx_fileName))
-            return {'status': 'success', 'message' : 'File successfully uploaded.'}
+
+            if eu.updateFileUpload(filename= xlsx_fileName, submissionId=submissionId) == 0:
+                return {'status': 'success', 'message' : 'File successfully uploaded.'}
+            else:
+               return {'status': 'failed', 'message': 'Upload successful, table update has failed.'}
 
         except:
             return {
@@ -79,6 +84,7 @@ class HandleUploadedFile(Resource):
 
         # If the file is not found:
         if not os.path.isfile(xlsxFilePath):
+            eu.updateFileValidation(submissionId=submissionId, status= 0, message= "Uploaded file was not found")
             return {
                 "status" : "failed",
                 "message" : "Uploaded file was not found"
@@ -88,6 +94,7 @@ class HandleUploadedFile(Resource):
         try:
             template_xlsx = pd.ExcelFile(xlsxFilePath)
         except:
+            eu.updateFileValidation(submissionId=submissionId, status=0, message="Uploaded file could not be opened as an excel file.")
             return {
                 "status" : "failed",
                 "message" : "Uploaded file could not be opened as an excel file."
@@ -104,6 +111,8 @@ class HandleUploadedFile(Resource):
                 missing_sheets.append(sheet)
 
         if len(missing_sheets) > 0:
+            eu.updateFileValidation(submissionId=submissionId, status=0,
+                                    message="Some sheets were missing from the file.")
             return {
                     "status": "failed",
                     "message": "Some sheets were missing from the file",
@@ -114,11 +123,15 @@ class HandleUploadedFile(Resource):
         missing_tags = check_study_tags(spread_sheets)
 
         if len(missing_tags) > 0:
+            eu.updateFileValidation(submissionId=submissionId, status=0,
+                                    message="Some study tags were not listed in the study sheet.")
             return {
                 "status": "failed",
                 "message": "Some study tags were not listed in the study sheet.",
                 "missingTags": missing_tags
             }
+        eu.updateFileValidation(submissionId=submissionId, status=1,
+                                message="First round of validation passed.")
         return {
             "status": "success",
             "message": "First round of validation passed."
