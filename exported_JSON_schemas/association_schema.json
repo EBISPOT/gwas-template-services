@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Spreadsheet describing association.",
+  "additionalProperties": false,
+  "required": [
+    "study_tag",
+    "variant_id",
+    "pvalue",
+    "effect_allele",
+    "effect_allele_frequency"
+  ],
+  "title": "association spreadsheet",
+  "name": "association_spreadsheet",
+  "type": "object",
+  "properties": {
+    "study_tag": {
+      "description": "Linking associations with study. Must match the study tag in the study table",
+      "type": "string",
+      "user_friendly": "Study tag"
+    },
+    "haplotype_id": {
+      "description": "For haplotype associations identifies identifies rows belonging together",
+      "type": "string",
+      "user_friendly": "Haplotype ID"
+    },
+    "variant_id": {
+      "description": "rsID or other variant identifier",
+      "type": "string",
+      "user_friendly": "Variant ID"
+    },
+    "pvalue": {
+      "description": "Reported p-value for variant in scientific notation",
+      "type": "string",
+      "user_friendly": "p-value",
+      "minimum": 0,
+      "maximum": 1e-05
+    },
+    "pvalue_text": {
+      "description": "Free text to add extra information eg. conditional analysis",
+      "type": "string",
+      "user_friendly": "Extra information"
+    },
+    "proxy_variant": {
+      "description": "rsID of a proxy SNP used in the replication stage only",
+      "type": "string",
+      "user_friendly": "Proxy variant"
+    },
+    "effect_allele": {
+      "description": "The allele whose effects are being studied in relation to the phenotype",
+      "type": "string",
+      "user_friendly": "Effect allele",
+      "pattern": "^[actgACTG]*$"
+    },
+    "other_allele": {
+      "description": "The other allele at the locus",
+      "type": "string",
+      "user_friendly": "Other allele",
+      "pattern": "^[actgACTG]*$"
+    },
+    "effect_allele_frequency": {
+      "description": "frequency of the effect allele or haplotype in the control population",
+      "type": "number",
+      "user_friendly": "Effect allele frequency"
+    },
+    "odds_ratio": {
+      "description": "Effect size of the effect allele or haplotype from a logistic regression for binary traits",
+      "type": "number",
+      "user_friendly": "Odds ratio"
+    },
+    "beta": {
+      "description": "Effect size from a linear regression for continious traits",
+      "type": "number",
+      "user_friendly": "Beta"
+    },
+    "beta_unit": {
+      "description": "Beta unit",
+      "type": "string",
+      "user_friendly": "Beta unit"
+    },
+    "ci_lower": {
+      "description": "Lower limit of the confidence interval",
+      "type": "number",
+      "user_friendly": "CI lower"
+    },
+    "ci_upper": {
+      "description": "Upper limit of the confidence interval",
+      "type": "number",
+      "user_friendly": "CI upper"
+    },
+    "standard_error": {
+      "description": "standard error of the effect",
+      "type": "number",
+      "user_friendly": "Standard error"
+    }
+  }
+}

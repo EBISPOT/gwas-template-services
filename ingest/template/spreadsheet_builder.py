@@ -52,7 +52,7 @@ class SpreadsheetBuilder:
         
         # As part of the table preparation, the description field needs to be generated:
         def _generate_description(row):
-            description = row['DESCRIPTION']
+            description = row['DESCRIPTION'] if isinstance(row['DESCRIPTION'], str) else ''
 
             # Adding example:
             if not pd.isna(row['EXAMPLE']):

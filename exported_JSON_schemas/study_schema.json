@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Spreadsheet describing study.",
+  "additionalProperties": false,
+  "required": [
+    "study_tag",
+    "genotyping_technology",
+    "imputation",
+    "variant_count",
+    "trait"
+  ],
+  "title": "study spreadsheet",
+  "name": "study_spreadsheet",
+  "type": "object",
+  "properties": {
+    "study_tag": {
+      "description": "A unique free-text label for each genome-wide association study in the publication",
+      "type": "string",
+      "user_friendly": "Study tag"
+    },
+    "genotyping_technology": {
+      "description": "The method used to genotype variants in the discovery stage",
+      "type": "string",
+      "user_friendly": "Genotyping technology",
+      "example": "Targeted genotyping array",
+      "ACCEPTED": [
+        "Genome-wide genotyping array",
+        "Targeted genotyping array",
+        "Exome genotyping array",
+        "Whole genome sequencing"
+      ]
+    },
+    "array_manufacturer": {
+      "description": "Manufacturer of the genotyping array used for the discovery stage",
+      "type": "string",
+      "user_friendly": "Array manufacturer",
+      "example": "Illumina"
+    },
+    "array_information": {
+      "description": "Additional information about the genotyping array",
+      "type": "string",
+      "user_friendly": "Array information",
+      "example": "immunochip"
+    },
+    "imputation": {
+      "description": "Were SNPs imputed for the discovery GWAS?",
+      "type": "boolean",
+      "user_friendly": "Imputation",
+      "example": "Yes/No",
+      "ACCEPTED": [
+        "Yes",
+        "No"
+      ]
+    },
+    "variant_count": {
+      "description": "The number of variants analysed in the discovery stage (after QC)",
+      "type": "integer",
+      "user_friendly": "Variant count"
+    },
+    "statistical_model": {
+      "description": "Details of the statistical model used to determine association significance",
+      "type": "string",
+      "user_friendly": "Statistical model"
+    },
+    "study_description": {
+      "description": "Additional information about the study",
+      "type": "string",
+      "user_friendly": "Study description"
+    },
+    "trait": {
+      "description": "The trait under investigation",
+      "type": "string",
+      "user_friendly": "Trait",
+      "example": "reticulocyte count"
+    },
+    "efo_trait": {
+      "description": "EFOs that best matching the \"trait\"",
+      "type": "string",
+      "user_friendly": "Mapped trait",
+      "example": "EFO_0007986"
+    },
+    "background_trait": {
+      "description": "Any background trait(s) shared by all individuals in the GWAS (e.g. in both cases and controls)",
+      "type": "string",
+      "user_friendly": "Background trait",
+      "example": "Nicotine dependence"
+    },
+    "background_efo_trait": {
+      "description": "EFOs that best match entered “background trait”",
+      "type": "string",
+      "user_friendly": "Mapped background trait",
+      "example": "EFO_0003768"
+    },
+    "summary_statistics_file": {
+      "description": "An identifier for the file containing full summary statistics for this study (if available)",
+      "type": "string",
+      "user_friendly": "Summary statistics file"
+    },
+    "summary_statistics_assembly": {
+      "description": "Genome assembly of the summary statitistics",
+      "type": "string",
+      "user_friendly": "Summary statistics assembly",
+      "example": "GRCh38"
+    }
+  }
+}

@@ -152,6 +152,7 @@ def returnTemplate():
         'studies': '/schema_definitions/study_schema.xlsx',
         'associations': '/schema_definitions/association_schema.xlsx',
         'samples': '/schema_definitions/sample_schema.xlsx',
+        'notes' : '/schema_definitions/notes_schema.xlsx'
     }
 
     # All schemas are loaded from the correct location:
@@ -175,7 +176,7 @@ def returnTemplate():
 @api.route('/schemas/')
 class SchemaList(Resource):
     def get(self):
-        return {"available_schemas": ["study", "association", "sample"]}
+        return {"available_schemas": ["study", "association", "sample", 'notes']}
 
 @api.route('/schemas/<string:schema_name>')
 class Schemas(Resource):
@@ -188,6 +189,7 @@ class Schemas(Resource):
         'study': dir_path + '/schema_definitions/study_schema.xlsx',
         'association': dir_path + '/schema_definitions/association_schema.xlsx',
         'sample': dir_path + '/schema_definitions/sample_schema.xlsx',
+        'note' : dir_path + '/schema_definitions/notes_schema.xlsx'
     }
 
     def get(self, schema_name):
