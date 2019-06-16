@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restplus import Resource, Api, reqparse
 import pandas as pd
 from flask import send_file
@@ -6,6 +6,8 @@ from flask_cors import CORS
 import os
 from werkzeug.datastructures import FileStorage
 import sys
+from flask import url_for
+from urllib.parse import unquote
 
 # Importing custom modules:
 from template.spreadsheet_builder import SpreadsheetBuilder
@@ -28,46 +30,6 @@ file_upload = api.parser()
 file_upload.add_argument('templateFile', type=FileStorage, location='files', required=True, help='Filled out template excel file.')
 file_upload.add_argument('submissionId', type=int, required=True, help='Submission ID.')
 file_upload.add_argument('fileName', type=str, required=True, help='Upload template file name.')
-
-# curl -v -X POST -F submissionId=123123 -F file=@uploadedTemplates/template_testUpload.xlsx http://localhost:9000/upload
-@api.route('/upload')
-@api.expect(file_upload, validate=True)
-class TemplateUploader(Resource):
-    def post(self):
-
-        # Extract parameters:
-        args = file_upload.parse_args()
-        xlsx_file = args['templateFile']
-        submissionId = args['submissionId']
-        xlsx_fileName = args['fileName']
-
-        filePath = '{}/{}'.format(Configuration.uploadFolder, submissionId)
-
-        # Does folder exists:
-        if not os.path.exists(filePath):
-            try:
-                os.mkdir(filePath)
-            except:
-                return {'status' : 'failed', 'message' : 'Submission folder ({}) could not be created.'.format(submissionId)}
-
-        # Is that a folder:
-        if not os.path.isdir(filePath):
-            return {'status': 'failed', 'message': 'Submission folder ({}) is not a directory.'.format(submissionId)}
-
-        # Try saving the file:
-        try:
-            xlsx_file.save('{}/{}'.format(filePath, xlsx_fileName))
-
-            if eu.updateFileUpload(filename= xlsx_fileName, submissionId=submissionId) == 0:
-                return {'status': 'success', 'message' : 'File successfully uploaded.'}
-            else:
-               return {'status': 'failed', 'message': 'Upload successful, table update has failed.'}
-
-        except:
-            return {
-                "status": "failed",
-                "message": "Couldn't save uploaded file."
-            }
 
 # This function calls validation for a file uploaded and the file is given as a parameter:
 @api.route('/validation')
@@ -195,7 +157,11 @@ def returnTemplate():
 @api.route('/schemas/')
 class SchemaList(Resource):
     def get(self):
-        return {"available_schemas": ["study", "association", "sample", 'notes']}
+        returnData = {"_links":{}}
+        for schema in Configuration.schemas.keys():
+            returnData["_links"][schema] = { 'href': '{}schemas/{}'.format(request.url_root, schema) }
+
+        return returnData
 
 @api.route('/schemas/<string:schema_name>')
 class Schemas(Resource):
@@ -203,22 +169,15 @@ class Schemas(Resource):
     # All schemas are loaded from the correct location:
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    # default input files:
-    inputFiles = {
-        'study': dir_path + '/schema_definitions/study_schema.xlsx',
-        'association': dir_path + '/schema_definitions/association_schema.xlsx',
-        'sample': dir_path + '/schema_definitions/sample_schema.xlsx',
-        'note' : dir_path + '/schema_definitions/notes_schema.xlsx'
-    }
-
     def get(self, schema_name):
+
         # Unknown schema:
-        if not schema_name in self.inputFiles.keys():
+        if not schema_name in Configuration.schemas:
             return({'error' : 'Unknown schema'})
 
         # Known schema:
         schema = jsonSchemaBuilder(schema_name)
-        schema.addTable(self.inputFiles[schema_name])
+        schema.addTable(self.dir_path + Configuration.schemas[schema_name])
         return schema.get_schema()
 
 @api.route('/hello')
