@@ -20,11 +20,27 @@ ENVNAME=template_serv
 conda env create -f ${APPROOT}/gwas-template-services/environment.yml --prefix ${MINICONDA}/envs/${ENVNAME}
 ```
 
-3. Activate environment and run app with gunicorn
+3. Activate environment and install local packages:
 
 ```bash
 conda activate ${ENVNAME}
+pip install .
+```
+
+The above command will also install the standalone version of the packages.
+
+4. Startup web application
+
+```bash
 gunicorn -b ${APPHOST}:${PORT} app:app
+```
+
+## Using the stand-alone versions:
+
+```bash
+gwas-spreadsheet_builder --output test_output.xlsx --input note:schema_definitions/notes_schema.xlsx \
+    study:schema_definitions/study_schema.xlsx \
+    cicamica:schema_definitions/association_schema.xlsx
 ```
 
 ## Endpoints
@@ -54,5 +70,6 @@ gunicorn -b ${APPHOST}:${PORT} app:app
 ### Trigger validation
 
 `/validation?submissionId=<submissionId: int>&fileName=<fileName: str>` (GET)
+
 
 

@@ -8,10 +8,10 @@ from werkzeug.datastructures import FileStorage
 import sys
 
 # Importing custom modules:
-from ingest.template.spreadsheet_builder import SpreadsheetBuilder
-from ingest.template.schemaJson_builder import jsonSchemaBuilder
-from ingest.validation.validator import open_template, check_study_tags
-from config.config import Configuration
+from template.spreadsheet_builder import SpreadsheetBuilder
+from template.schemaJson_builder import jsonSchemaBuilder
+from validation.validator import open_template, check_study_tags
+from config.properties import Configuration
 import endpoint_utils as eu
 
 # import endpoint_utils as create_ftp_directories
@@ -155,17 +155,36 @@ def returnTemplate():
         'notes' : '/schema_definitions/notes_schema.xlsx'
     }
 
+    # This variable will be given from the input:
+    filterParameters = {
+        'curator': True,
+        'haplotype': False,
+        'effect': 'beta',
+        'background': True
+    }
+
+    # Initialize spreadsheet builder object:
+    spreadsheet_builder = SpreadsheetBuilder()
+
     # All schemas are loaded from the correct location:
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    inputDataFrames = {title: pd.read_excel(dir_path + filename, index_col=False) for title, filename in inputFiles.items()}
+    # inputDataFrames = {title: pd.read_excel(dir_path + filename, index_col=False) for title, filename in inputFiles.items()}
+    for tabname, filename in Configuration.schemas.items():
+        # TODO: test file and other stuff
 
-    # Submitting all dataframes to the spreadsheet builders:
-    spreadsheet_builder = SpreadsheetBuilder()
-    spreadsheet_builder.generate_workbook(inputDataFrames)
+        # Open schema sheet as pandas dataframe:
+        schemaDataFrame = pd.read_excel(dir_path + filename, index_col=False)
+
+        # Set default columns:
+        filteredSchemaDataFrame = eu.filter_parser(filterParameters, tabname, schemaDataFrame)
+
+        # Add spreadsheet:
+        if len(filteredSchemaDataFrame): spreadsheet_builder.generate_workbook(tabname, filteredSchemaDataFrame)
+
+    # Once we are finished we save stuff:
     x = spreadsheet_builder.save_workbook()
     x.seek(0)
-
-    # The spreadsheet is returned as bytestream:
+    print(x)
     return send_file(
         x,
         as_attachment=True,
