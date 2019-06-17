@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Test page demonstrate template generator</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+<div class="alert warning">
+    <strong>Warning!</strong> This page does not reflect actual behaviour of the final deposition system!</br>This page demonstates the customizable templates ONLY.
+</div>
+
+<div>
+    In the following section there are a series of adjustable option to fine-tune the downloadable template.</br>
+</div>
+    <!--
+    Template filter definitions:
+    {
+         "curator": true,
+         "haplotype": true,
+         "snpxsnp": true,
+         "effect": "beta", // or "OR"
+         "backgroundTrait": true,
+    }
+    -->
+</br>
+<div class="filter" id="filter">
+    <div class="curator">
+        <form>
+            <label for="curator">Are you a curator? </label>
+            <input type="radio" name="curator" value="true">Yes
+            <input type="radio" name="curator" value="false" checked>No<br>
+
+            <label for="haplotype">Deposit haplotype associations?</label>
+            <input type="radio" name="haplotype" value="true">Yes
+            <input type="radio" name="haplotype" value="false" checked>No<br>
+
+            <label for="effect">How the effect recorded?</label>
+            <input type="radio" name="effect" value="OR">OR
+            <input type="radio" name="effect" value="beta" checked>beta<br>
+
+            <label for="backgroundTrait">Are background traits recorded?</label>
+            <input type="radio" name="backgroundTrait" value="true">Yes
+            <input type="radio" name="backgroundTrait" value="false" checked>No<br>
+        </form>
+    </div>
+    </br>
+    <div>
+        <button id="generate">Generate template</button>
+    </div>
+</div>
+
+
+</body>
+    <script type = "text/javascript" src = "static/scripts.js" ></script>
+</html>

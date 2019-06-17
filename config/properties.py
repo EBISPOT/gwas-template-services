@@ -32,12 +32,12 @@ class Configuration():
     #     "haplotype": true,
     #     "snpxsnp": true,
     #     "effect": "beta", // or "OR"
-    #                             "backgroundTrait": true,
+    #     "backgroundTrait": true,
     # }
     filters = {
         'curator' : {
             'note' : ['study_tag', 'note', 'note_subject', 'status'],
-            'study' : ['efo_trait','background_efo_trait'],
+            'study' : ['efo_trait'],
             'sample' : ['ancestry']
         },
         'haplotype' : {
@@ -49,9 +49,15 @@ class Configuration():
         'OR' : {
             'association': ['odds_ratio', 'ci_lower', 'ci_upper']
         },
-        'background' : {
+        'backgroundTrait' : {
             'study' : ['background_trait']
-        }
+        },
+        'snpxsnp' : {
+
+        },
+        'curator_backgroundTrait': {
+            'study': ['background_efo_trait']
+        },
     }
 
 
