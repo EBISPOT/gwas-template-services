@@ -2,7 +2,7 @@ from collections import OrderedDict
 from argparse import ArgumentParser
 import pandas as pd
 import json
-import pkg_resources
+
 
 class jsonSchemaBuilder:
     def __init__(self, schemaType):
@@ -32,7 +32,6 @@ class jsonSchemaBuilder:
         # Adding mandatory fields:
         inputDataFrame.loc[ inputDataFrame.MANDATORY, 'NAME'].apply(lambda x: self.schema['required'].append(x))
 
-         
     def _addPropertyToSchema(self, row):
         
         # Initialize property description:
@@ -69,26 +68,29 @@ class jsonSchemaBuilder:
             
     def get_schema(self):
         return(self.schema)
-            
-            
-if __name__ == '__main__':
+
+
+def main():
+
     parser = ArgumentParser()
 
-    parser.add_argument('-o', '--output', dest='output', help='Filename for the resulting json file.', required=False, default='output_schema.json')
-    parser.add_argument('-i', '--input', dest='input', help='Excel spreadsheet describing the schema.', required=True)
-    parser.add_argument('-t', '--type', dest='type', help='Type of schema eg. association.', required = True)
+    parser.add_argument('-f', '--file', dest='file', help='Excel spreadsheet file describing the schema.', required=True)
+    parser.add_argument('-n', '--name', dest='name', help='Name of schema eg. association.', required = True )
 
     args = parser.parse_args()
-    outputFileName = args.output
-    inputFileName = args.input
-    schemaType = args.type
+    inputFileName = args.file
+    schemaType = args.name
 
     # Open input file into a dataframe:
     inputDataFrame = pd.read_excel(inputFileName, index_col=False)
 
     # Generate json schema:
     schemaBuilder = jsonSchemaBuilder(schemaType)
-    schemaBuilder.addTable() #inputDataFrame)
-    schemaBuilder.saveJson(outputFileName)
-    schema = schemaBuilder.get_schema()
+    schemaBuilder.addTable(inputDataFrame)
+    # schemaBuilder.saveJson(outputFileName) # File is not saved!
+    print(schemaBuilder.get_schema())
+
+
+if __name__ == '__main__':
+    main()
 
