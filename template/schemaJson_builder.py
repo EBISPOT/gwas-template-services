@@ -25,6 +25,8 @@ class jsonSchemaBuilder:
 
         # Reading the template into a df:
         inputDataFrame = pd.read_excel(schemaSpreadsheet, index_col=False)
+        inputDataFrame = inputDataFrame.where((inputDataFrame.notnull()), None)
+
         
         # Adding df to schema:
         inputDataFrame.apply(self._addPropertyToSchema, axis = 1)

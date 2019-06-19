@@ -133,6 +133,7 @@ class templateGenerator(Resource):
 
             # Open schema sheet as pandas dataframe:
             schemaDataFrame = pd.read_excel(dir_path + filename, index_col=False)
+            schemaDataFrame = schemaDataFrame.where((pd.notnull(schemaDataFrame)), None)
 
             # Set default columns:
             filteredSchemaDataFrame = eu.filter_parser(filterParameters, tabname, schemaDataFrame)

@@ -40,9 +40,29 @@ def filter_parser(filterParameters, tabname, schemaDf):
             for field in conf.filters['curator_backgroundTrait'][tabname]:
                 schemaDf.loc[schemaDf.NAME == field, 'DEFAULT'] = True
 
-    # Reset dataframe index:
+    # Filter dataframe:
+    schemaDf = schemaDf.loc[schemaDf.DEFAULT]
+
+    # Resetting index:
     schemaDf = schemaDf.reset_index(drop=True)
-    return(schemaDf.loc[schemaDf.DEFAULT])
+    return(schemaDf)
+
+def schema_reader(schema_name):
+    """
+
+    :param schema_name: This is the name of the schema eg. study, association etc.
+    :type str
+    :return: dataframe with the
+    """
+    return 1
+
+
+    # Testing if schema exists:
+
+
+    # Opening schema as pandas dataframe:
+
+    # Fixing NaN values in the dataframe:
 
 
 
