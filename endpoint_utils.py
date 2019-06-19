@@ -1,5 +1,7 @@
 
 from config.properties import Configuration as conf
+import pandas as pd
+import os
 
 
 def filter_parser(filterParameters, tabname, schemaDf):
@@ -54,16 +56,21 @@ def schema_reader(schema_name):
     :type str
     :return: dataframe with the
     """
-    return 1
+    # # List of schemas that needs to be served:
+    # schemas = {
+    #     'study': '/schema_definitions/study_schema.xlsx',
+    #     'association': '/schema_definitions/association_schema.xlsx',
+    #     'sample': '/schema_definitions/sample_schema.xlsx',
+    #     'note': '/schema_definitions/notes_schema.xlsx'
+    # }
+    dir_path = os.path.dirname(os.path.realpath(__file__))
 
-
-    # Testing if schema exists:
-
-
-    # Opening schema as pandas dataframe:
-
-    # Fixing NaN values in the dataframe:
-
+    try:
+        schema_dataframe = pd.read_excel(dir_path + conf.schemas[schema_name], index_col=False)
+        schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
+        return schema_dataframe
+    except KeyError as e:
+        return '[Error] Schema: {} is not found in the configuration. Available schemas: {}'.format(schema_name, list(conf.schemas.keys()))
 
 
 

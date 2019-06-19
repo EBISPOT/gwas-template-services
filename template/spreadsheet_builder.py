@@ -46,6 +46,10 @@ class SpreadsheetBuilder:
         # Defining format for header highlights:
         self.mandatory_format = self.workbook.add_format(self.formatHighlightManadatory)
 
+        # Define column format to set values as text:
+        self.setTextFormat = self.workbook.add_format()
+        self.setTextFormat.set_num_format('@')
+
     def generate_workbook(self, tabname, dataframe):
         """
 
@@ -65,7 +69,7 @@ class SpreadsheetBuilder:
         worksheet_object = self.writer_object.sheets[tabname]
 
         # Set column width:
-        worksheet_object.set_column(0, len(templateSheet.columns), 20)
+        worksheet_object.set_column(0, len(templateSheet.columns), 20, self.setTextFormat)
 
         # Formatting comment row:
         worksheet_object.set_row(0, None, self.desc_format)

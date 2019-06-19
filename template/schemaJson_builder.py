@@ -21,12 +21,15 @@ class jsonSchemaBuilder:
         
         self.schemaType = schemaType
         
-    def addTable(self, schemaSpreadsheet):
+    def addTable(self, inputDataFrame):
+        """
+
+        :param inputDataFrame: the dataframe read from the schema excel file.
+        :return: JSON schema builder object
+        """
 
         # Reading the template into a df:
-        inputDataFrame = pd.read_excel(schemaSpreadsheet, index_col=False)
         inputDataFrame = inputDataFrame.where((inputDataFrame.notnull()), None)
-
         
         # Adding df to schema:
         inputDataFrame.apply(self._addPropertyToSchema, axis = 1)

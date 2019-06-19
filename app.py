@@ -125,21 +125,18 @@ class templateGenerator(Resource):
 
         print(filterParameters)
 
-        # All schemas are loaded from the correct location:
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-
-        for tabname, filename in Configuration.schemas.items():
+        for schema in Configuration.schemas.keys():
             # TODO: test file and other stuff
 
             # Open schema sheet as pandas dataframe:
-            schemaDataFrame = pd.read_excel(dir_path + filename, index_col=False)
+            schemaDataFrame = eu.schema_reader(schema)
             schemaDataFrame = schemaDataFrame.where((pd.notnull(schemaDataFrame)), None)
 
             # Set default columns:
-            filteredSchemaDataFrame = eu.filter_parser(filterParameters, tabname, schemaDataFrame)
+            filteredSchemaDataFrame = eu.filter_parser(filterParameters, schema, schemaDataFrame)
 
             # Add spreadsheet if at least one column remained:
-            if len(filteredSchemaDataFrame): spreadsheet_builder.generate_workbook(tabname, filteredSchemaDataFrame)
+            if len(filteredSchemaDataFrame): spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
 
         # Once all spreadsheets added to the template, saving document:
         x = spreadsheet_builder.save_workbook()
@@ -176,9 +173,12 @@ class Schemas(Resource):
         if not schema_name in Configuration.schemas:
             return({'error' : 'Unknown schema'})
 
+        # Read file:
+        schema_df = eu.schema_reader(schema_name)
+
         # Known schema:
         schema = jsonSchemaBuilder(schema_name)
-        schema.addTable(self.dir_path + Configuration.schemas[schema_name])
+        schema.addTable(schema_df)
         return schema.get_schema()
 
 # The following endpoint serves testing purposes only to demonstrate the flexibility of the template generation.
