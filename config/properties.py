@@ -7,17 +7,6 @@ class Configuration():
     rootPath = os.path.dirname(os.path.realpath(__file__))
     uploadFolder = '{}/../uploadedTemplates'.format(rootPath)  #'/Users/dsuveges/Project/gwas-template-services/uploadedTemplates'
 
-    # Credentials for the private sftp:
-    FTP = {
-        'ftpServer': 'ftp-private.ebi.ac.uk',
-        'ftpUser': 'gwas_cat',
-        'ftpPassword': 'y9vYPfvg'
-    }
-
-    # GWAS deposition service app:
-    serviceAppAddress = 'http://snoopy.ebi.ac.uk'
-    serviceAppPort = '5000'
-
     # List of schemas that needs to be served:
     schemas = {
         'study': '/schema_definitions/study_schema.xlsx',
@@ -27,13 +16,6 @@ class Configuration():
     }
 
     # Template filter definitions:
-    # {
-    #     "curator": true,
-    #     "haplotype": true,
-    #     "snpxsnp": true,
-    #     "effect": "beta", // or "OR"
-    #     "backgroundTrait": true,
-    # }
     filters = {
         'curator' : {
             'note' : ['study_tag', 'note', 'note_subject', 'status'],
@@ -60,4 +42,42 @@ class Configuration():
         },
     }
 
+    # Logging related configuration:
+    LOG_LEVEL = "INFO"
+    LOGGER_LOG = "logger.log"
+    LOGGER_HANDLER = "logger"
+    LOG_CONF = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'void': {
+                'format': ''
+            },
+            'standard': {
+                'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+            },
+        },
+        'handlers': {
+            'default': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard',
+                'stream': 'ext://sys.stdout'
+            },
+            'logger': {
+                'level': 'INFO',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'formatter': 'standard',
+                'maxBytes': 10485760,
+                'backupCount': 20,
+                'encoding': 'utf8'
+            },
+        },
+        'loggers': {
+            '': {
+                'handlers': ['logger'],
+                'level': 'INFO'
+            },
+        }
+    }
 
