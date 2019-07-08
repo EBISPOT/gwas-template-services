@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 # sys.path.insert(0,'/homes/dsuveges/Project/gwas-ingest/ingest/template/')
-from ingest.template.spreadsheet_builder import SpreadsheetBuilder
+from template.spreadsheet_builder import SpreadsheetBuilder
 # from ingest.template.schemaJson_builder import jsonSchemaBuilder
 # from collections import OrderedDict
 import numpy as np

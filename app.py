@@ -1,20 +1,15 @@
-from flask import Flask
+from flask import Flask, request, render_template, send_file
 from flask_restplus import Resource, Api, reqparse
-import pandas as pd
-from flask import send_file
 from flask_cors import CORS
+import pandas as pd
 import os
-from werkzeug.datastructures import FileStorage
-import sys
 
 # Importing custom modules:
-from ingest.template.spreadsheet_builder import SpreadsheetBuilder
-from ingest.template.schemaJson_builder import jsonSchemaBuilder
-from ingest.validation.validator import open_template, check_study_tags
-from config.config import Configuration
+from template.spreadsheet_builder import SpreadsheetBuilder
+from template.schemaJson_builder import jsonSchemaBuilder
+from validation.validator import open_template, check_study_tags
+from config.properties import Configuration
 import endpoint_utils as eu
-
-# import endpoint_utils as create_ftp_directories
 
 app = Flask(__name__)
 api = Api(app)
@@ -24,50 +19,14 @@ parser = api.parser()
 parser.add_argument('submissionId', type=int, required=True, help='Submission ID.')
 parser.add_argument('fileName', type=str, required=True, help='Uploaded file name.')
 
-file_upload = api.parser()
-file_upload.add_argument('templateFile', type=FileStorage, location='files', required=True, help='Filled out template excel file.')
-file_upload.add_argument('submissionId', type=int, required=True, help='Submission ID.')
-file_upload.add_argument('fileName', type=str, required=True, help='Upload template file name.')
 
-# curl -v -X POST -F submissionId=123123 -F file=@uploadedTemplates/template_testUpload.xlsx http://localhost:9000/upload
-@api.route('/upload')
-@api.expect(file_upload, validate=True)
-class TemplateUploader(Resource):
-    def post(self):
+templateParams = api.parser()
+templateParams.add_argument('curator', type=str, required=False, help='If the user is a curator or not.')
+templateParams.add_argument('haplotype', type=str, required=False, help='If the associations are haplotypes or not.')
+templateParams.add_argument('snpxsnp', type=str, required=False, help='If the associations are SNP x SNP interactions or not.')
+templateParams.add_argument('effect', type=str, required=False, help='How the effect is expressed.')
+templateParams.add_argument('backgroundTrait', type=str, required=False, help='If backgroundtrait is present or not.')
 
-        # Extract parameters:
-        args = file_upload.parse_args()
-        xlsx_file = args['templateFile']
-        submissionId = args['submissionId']
-        xlsx_fileName = args['fileName']
-
-        filePath = '{}/{}'.format(Configuration.uploadFolder, submissionId)
-
-        # Does folder exists:
-        if not os.path.exists(filePath):
-            try:
-                os.mkdir(filePath)
-            except:
-                return {'status' : 'failed', 'message' : 'Submission folder ({}) could not be created.'.format(submissionId)}
-
-        # Is that a folder:
-        if not os.path.isdir(filePath):
-            return {'status': 'failed', 'message': 'Submission folder ({}) is not a directory.'.format(submissionId)}
-
-        # Try saving the file:
-        try:
-            xlsx_file.save('{}/{}'.format(filePath, xlsx_fileName))
-
-            if eu.updateFileUpload(filename= xlsx_fileName, submissionId=submissionId) == 0:
-                return {'status': 'success', 'message' : 'File successfully uploaded.'}
-            else:
-               return {'status': 'failed', 'message': 'Upload successful, table update has failed.'}
-
-        except:
-            return {
-                "status": "failed",
-                "message": "Couldn't save uploaded file."
-            }
 
 # This function calls validation for a file uploaded and the file is given as a parameter:
 @api.route('/validation')
@@ -143,40 +102,64 @@ class HandleUploadedFile(Resource):
             "message": "First round of validation passed."
         }
 
-# Non-REST endpoint for providing the templates:
-@app.route('/templates/')
-def returnTemplate():
 
-    # default input files:
-    inputFiles = {
-        'studies': '/schema_definitions/study_schema.xlsx',
-        'associations': '/schema_definitions/association_schema.xlsx',
-        'samples': '/schema_definitions/sample_schema.xlsx',
-        'notes' : '/schema_definitions/notes_schema.xlsx'
-    }
+# REST endpoint for providing the template spreadsheets:
+@api.route('/templates')
+@api.expect(templateParams, validate=True)
+class templateGenerator(Resource):
+    def post(self):
 
-    # All schemas are loaded from the correct location:
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    inputDataFrames = {title: pd.read_excel(dir_path + filename, index_col=False) for title, filename in inputFiles.items()}
+        # Extract parameters:
+        args = templateParams.parse_args()
 
-    # Submitting all dataframes to the spreadsheet builders:
-    spreadsheet_builder = SpreadsheetBuilder()
-    spreadsheet_builder.generate_workbook(inputDataFrames)
-    x = spreadsheet_builder.save_workbook()
-    x.seek(0)
+        # parse filter based on the input parameters:
+        filterParameters = {}
+        if 'curator' in args: filterParameters['curator'] = True if args['curator'] == "true" else False
+        if 'haplotype' in args: filterParameters['haplotype'] = True if args['haplotype'] == "true" else False
+        if 'snpxsnp' in args: filterParameters['snpxsnp'] = True if args['snpxsnp'] == "true" else False
+        if 'backgroundTrait' in args: filterParameters['backgroundTrait'] = True if args['backgroundTrait'] == "true" else False
+        if 'effect' in args: filterParameters['effect'] = args['effect']
 
-    # The spreadsheet is returned as bytestream:
-    return send_file(
-        x,
-        as_attachment=True,
-        attachment_filename='template.xlsx',
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+        # Initialize spreadsheet builder object:
+        spreadsheet_builder = SpreadsheetBuilder()
+
+        print(filterParameters)
+
+        for schema in Configuration.schemas.keys():
+            # TODO: test file and other stuff
+
+            # Open schema sheet as pandas dataframe:
+            schemaDataFrame = eu.schema_reader(schema)
+            schemaDataFrame = schemaDataFrame.where((pd.notnull(schemaDataFrame)), None)
+
+            # Set default columns:
+            filteredSchemaDataFrame = eu.filter_parser(filterParameters, schema, schemaDataFrame)
+
+            # Add spreadsheet if at least one column remained:
+            if len(filteredSchemaDataFrame): spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
+
+        # Once all spreadsheets added to the template, saving document:
+        x = spreadsheet_builder.save_workbook()
+        x.seek(0)
+
+        # Returning data:
+        return send_file(
+            x,
+            as_attachment=True,
+            attachment_filename='template.xlsx',
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
 
 @api.route('/schemas/')
 class SchemaList(Resource):
     def get(self):
-        return {"available_schemas": ["study", "association", "sample", 'notes']}
+        returnData = {"_links":{}}
+        for schema in Configuration.schemas.keys():
+            returnData["_links"][schema] = { 'href': '{}schemas/{}'.format(request.url_root, schema) }
+
+        return returnData
+
 
 @api.route('/schemas/<string:schema_name>')
 class Schemas(Resource):
@@ -184,28 +167,24 @@ class Schemas(Resource):
     # All schemas are loaded from the correct location:
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    # default input files:
-    inputFiles = {
-        'study': dir_path + '/schema_definitions/study_schema.xlsx',
-        'association': dir_path + '/schema_definitions/association_schema.xlsx',
-        'sample': dir_path + '/schema_definitions/sample_schema.xlsx',
-        'note' : dir_path + '/schema_definitions/notes_schema.xlsx'
-    }
-
     def get(self, schema_name):
+
         # Unknown schema:
-        if not schema_name in self.inputFiles.keys():
+        if not schema_name in Configuration.schemas:
             return({'error' : 'Unknown schema'})
+
+        # Read file:
+        schema_df = eu.schema_reader(schema_name)
 
         # Known schema:
         schema = jsonSchemaBuilder(schema_name)
-        schema.addTable(self.inputFiles[schema_name])
+        schema.addTable(schema_df)
         return schema.get_schema()
 
-@api.route('/hello')
-class HelloWorld(Resource):
-    def get(self):
-        return {"hello": "world"}
+# The following endpoint serves testing purposes only to demonstrate the flexibility of the template generation.
+@app.route('/template_download_test')
+def hello():
+    return render_template('template_test.html')
 
 
 if __name__ == '__main__':
