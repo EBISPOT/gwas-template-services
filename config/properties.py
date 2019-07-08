@@ -42,4 +42,43 @@ class Configuration():
         },
     }
 
+    # Logging related configuration:
+    logging_path = "./logs"
+    LOG_LEVEL = "INFO"
+    LOGGER_LOG = "logger.log"
+    LOGGER_HANDLER = "logger"
+    LOG_CONF = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'void': {
+                'format': ''
+            },
+            'standard': {
+                'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+            },
+        },
+        'handlers': {
+            'default': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard',
+                'stream': 'ext://sys.stdout'
+            },
+            'logger': {
+                'level': 'INFO',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'formatter': 'standard',
+                'maxBytes': 10485760,
+                'backupCount': 20,
+                'encoding': 'utf8'
+            },
+        },
+        'loggers': {
+            '': {
+                'handlers': ['logger'],
+                'level': 'INFO'
+            },
+        }
+    }
 
