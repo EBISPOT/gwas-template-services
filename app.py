@@ -19,11 +19,7 @@ app = Flask(__name__)
 api = Api(app)
 cors = CORS(app)
 
-parser = api.parser()
-parser.add_argument('submissionId', type=int, required=True, help='Submission ID.')
-parser.add_argument('fileName', type=str, required=True, help='Uploaded file name.')
-
-
+# Parameters for filtering template spreadsheets:
 templateParams = api.parser()
 templateParams.add_argument('curator', type=str, required=False, help='If the user is a curator or not.')
 templateParams.add_argument('haplotype', type=str, required=False, help='If the associations are haplotypes or not.')
@@ -155,6 +151,7 @@ class templateGenerator(Resource):
         )
 
 
+# Endpoint to get a list for all available schemas:
 @api.route('/schemas/')
 class SchemaList(Resource):
     def get(self):
@@ -165,6 +162,7 @@ class SchemaList(Resource):
         return returnData
 
 
+# Endpoint to individual schemas:
 @api.route('/schemas/<string:schema_name>')
 class Schemas(Resource):
 
@@ -184,6 +182,18 @@ class Schemas(Resource):
         schema = jsonSchemaBuilder(schema_name)
         schema.addTable(schema_df)
         return schema.get_schema()
+
+# Setting log level:
+def _set_log_level(LOG_CONF, LOG_LEVEL):
+    for handler in LOG_CONF['handlers']:
+        LOG_CONF['handlers'][handler]['level'] = LOG_LEVEL
+    for loggr in LOG_CONF['loggers']:
+        LOG_CONF['loggers'][loggr]['level'] = LOG_LEVEL
+    return LOG_CONF
+
+# Function for logging:
+def _set_log_path(properties):
+    return register_logger.set_log_path(properties)
 
 # The following endpoint serves testing purposes only to demonstrate the flexibility of the template generation.
 @app.route('/template_download_test')

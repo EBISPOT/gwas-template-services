@@ -43,6 +43,7 @@ class Configuration():
     }
 
     # Logging related configuration:
+    logging_path = "./logs"
     LOG_LEVEL = "INFO"
     LOGGER_LOG = "logger.log"
     LOGGER_HANDLER = "logger"
