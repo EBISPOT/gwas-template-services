@@ -35,12 +35,13 @@ The above command will also install the standalone version of the packages.
 gunicorn -b ${APPHOST}:${PORT} app:app
 ```
 
-## Using the stand-alone versions:
+## Using the stand-alone version:
 
 ```bash
-gwas-spreadsheet_builder --output test_output.xlsx --input note:schema_definitions/notes_schema.xlsx \
-    study:schema_definitions/study_schema.xlsx \
-    cicamica:schema_definitions/association_schema.xlsx
+gwas-spreadsheet_builder --output test_output.xlsx \
+    --input note:schema_definitions/notes_schema.xlsx \
+        study:schema_definitions/study_schema.xlsx \
+        association:schema_definitions/association_schema.xlsx
 ```
 
 ## Endpoints
