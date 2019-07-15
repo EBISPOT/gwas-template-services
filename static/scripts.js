@@ -7,7 +7,7 @@ function generateTemplate(){
     // Submit POST request:
     var xhr = new XMLHttpRequest();
     var hostname=window.location.hostname
-    xhr.open("POST", 'templates', true);
+    xhr.open("POST", 'v1/templates', true);
     xhr.responseType = 'blob';
     xhr.send(parameters);
     xhr.onload = function() {

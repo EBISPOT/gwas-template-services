@@ -5,63 +5,54 @@ import json
 
 
 class jsonSchemaBuilder:
-    def __init__(self, schemaType):
-        
-        # Adding fixed values to schema document:
-        self.schema = OrderedDict({
-            "$schema": 'http://json-schema.org/draft-07/schema#',
-            "description": 'Spreadsheet describing {}.'.format(schemaType),
-            "additionalProperties": False,
-            "required" : [],
-            "title": '{} spreadsheet'.format(schemaType),
-            "name": '{}_spreadsheet'.format(schemaType),
-            "type": "object",
-            'properties' : OrderedDict()
-        })
-        
-        self.schemaType = schemaType
-        
-    def addTable(self, inputDataFrame):
-        """
+    def __init__(self, schemaVersion, triggerRow):
 
-        :param inputDataFrame: the dataframe read from the schema excel file.
-        :return: JSON schema builder object
-        """
+        # Saving parameters:
+        self.version = schemaVersion
+        self.triggerRow = triggerRow
 
-        # Reading the template into a df:
-        inputDataFrame = inputDataFrame.where((inputDataFrame.notnull()), None)
-        
+        # Initialize JSON schema:
+        self.JSON_schema = {'version' : schemaVersion}
+
+    def addTable(self, sheetName, inputDataFrame):
+
+        # Initialize sheet in the JSON object:
+        self.JSON_schema[sheetName] = {
+            'triggerRow' : self.triggerRow,
+            'studyTagColumnName' : 'Study tag'
+        }
+
         # Adding df to schema:
-        inputDataFrame.apply(self._addPropertyToSchema, axis = 1)
+        self.JSON_schema[sheetName]["columns"] = list(inputDataFrame.apply(self._addPropertyToSchema, axis = 1))
 
-        # Adding mandatory fields:
-        inputDataFrame.loc[ inputDataFrame.MANDATORY, 'NAME'].apply(lambda x: self.schema['required'].append(x))
 
     def _addPropertyToSchema(self, row):
         
         # Initialize property description:
-        propObj = {
+        columnData  = {
+            "columnName" : row['NAME'],
             "description": row['DESCRIPTION'],
-            "type": row['TYPE'],
-            "user_friendly": row['HEADER'],
+            "baseType": row['TYPE'],
+            "columnHeading": row['HEADER'],
+            "required" : row['MANDATORY'],
+            "default" : row['DEFAULT'],
         }
         
         # Adding pattern:
-        if not pd.isna(row['PATTERN']): propObj['pattern'] = row['PATTERN']
+        if not pd.isna(row['PATTERN']): columnData['pattern'] = row['PATTERN']
 
         # Adding example:
-        if not pd.isna(row['EXAMPLE']): propObj['example'] = row['EXAMPLE']
+        if not pd.isna(row['EXAMPLE']): columnData['example'] = row['EXAMPLE']
 
         # Adding boundaries:
-        if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']): 
-            propObj['minimum'] = row['LOWER']
-            propObj['maximum'] = row['UPPER']
+        if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']):
+            columnData['lowerBound'] = row['LOWER']
+            columnData['upperBound'] = row['UPPER']
 
         # Adding Accepted values:
-        if not pd.isna(row['ACCEPTED']): propObj['ACCEPTED'] = row['ACCEPTED'].split('|')
+        if not pd.isna(row['ACCEPTED']): columnData['acceptedValues'] = row['ACCEPTED'].split('|')
 
-        # Adding property to schema:
-        self.schema['properties'][row['NAME']] = propObj
+        return columnData
     
     def saveJson(self, fileName = None):
         if not fileName: 
@@ -72,7 +63,7 @@ class jsonSchemaBuilder:
             json.dump(self.schema, outfile, indent=4)
             
     def get_schema(self):
-        return(self.schema)
+        return(self.JSON_schema)
 
 
 def main():

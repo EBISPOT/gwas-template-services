@@ -6,7 +6,7 @@ import re
 from argparse import ArgumentParser
 
 
-class schamaVersion(object):
+class schemaVersioning(object):
 
     sheets = ['study', 'association', 'sample', 'notes']
     schemaFolder = os.path.dirname(os.path.realpath(__file__))
@@ -38,14 +38,12 @@ class schamaVersion(object):
                 schema_dataframe = pd.read_excel(filename, index_col=False)
                 schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
                 schema_dfs[sheet] = schema_dataframe
-            except KeyError as e:
-                return '[Error] Schema: {} is not found in the configuration. Available schemas: {}'.format(schema_name, list(conf.schemas.keys()))
-
+            except:
+                print('[Warning] The schema file ({}) was not found.'.format(filename))
+                continue
 
         # return ordered dict:
         return(schema_dfs)
-
-
 
 
 def main():
@@ -60,7 +58,7 @@ def main():
         schemaVersion = '1.0'
 
     # Initialize schema versioning object:
-    sv = schamaVersion()
+    sv = schemaVersioning()
 
     # Get available versions:
     availableVersions = sv.get_versions()
@@ -68,7 +66,7 @@ def main():
 
     # Load all schemas for the specified version:
     schemas = sv.read_schema(schemaVersion)
-    print(schemas)
+    print('[Info] The following spreadsheets for v.{} were successfully loaded: {}'.format(schemaVersion, ', '.join(schemas.keys())))
 
 
 
