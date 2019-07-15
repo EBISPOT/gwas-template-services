@@ -13,6 +13,8 @@ from template.spreadsheet_builder import SpreadsheetBuilder
 from template.schemaJson_builder import jsonSchemaBuilder
 from validation.validator import open_template, check_study_tags
 from config.properties import Configuration
+from schema_definitions.schemaVersion import schemaVersioning
+
 import endpoint_utils as eu
 
 app = Flask(__name__)
@@ -29,7 +31,7 @@ templateParams.add_argument('backgroundTrait', type=str, required=False, help='I
 
 
 # This function calls validation for a file uploaded and the file is given as a parameter:
-@api.route('/validation')
+@api.route('/v1/validation')
 class HandleUploadedFile(Resource):
     def get(self):
 
@@ -104,7 +106,7 @@ class HandleUploadedFile(Resource):
 
 
 # REST endpoint for providing the template spreadsheets:
-@api.route('/templates')
+@api.route('/v1/templates')
 @api.expect(templateParams, validate=True)
 class templateGenerator(Resource):
     def post(self):
@@ -125,15 +127,15 @@ class templateGenerator(Resource):
 
         print(filterParameters)
 
-        for schema in Configuration.schemas.keys():
-            # TODO: test file and other stuff
+        # Reading all schema files into a single ordered dictionary:
+        schemaVersion = Configuration.schemaVersion
+        sv = schemaVersioning()
+        schemaDataFrames = sv.read_schema(schemaVersion)
 
-            # Open schema sheet as pandas dataframe:
-            schemaDataFrame = eu.schema_reader(schema)
-            schemaDataFrame = schemaDataFrame.where((pd.notnull(schemaDataFrame)), None)
+        for schema in schemaDataFrames.keys():
 
             # Set default columns:
-            filteredSchemaDataFrame = eu.filter_parser(filterParameters, schema, schemaDataFrame)
+            filteredSchemaDataFrame = eu.filter_parser(filterParameters, schema, schemaDataFrames[schema])
 
             # Add spreadsheet if at least one column remained:
             if len(filteredSchemaDataFrame): spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
@@ -151,37 +153,50 @@ class templateGenerator(Resource):
         )
 
 
-# Endpoint to get a list for all available schemas:
-@api.route('/schemas/')
+
+@api.route('/v1/template-schema')
 class SchemaList(Resource):
     def get(self):
-        returnData = {"_links":{}}
-        for schema in Configuration.schemas.keys():
-            returnData["_links"][schema] = { 'href': '{}schemas/{}'.format(request.url_root, schema) }
+
+        # Get all versions:
+        sv = schemaVersioning()
+        supported_versions = sv.get_versions()
+
+        # Initialize return data:
+        returnData = {"schema_versions":{}}
+
+        for version in supported_versions:
+            returnData["schema_versions"][version] = { 'href': '{}/v1/template-schema/{}'.format(request.url_root, version) }
 
         return returnData
 
 
-# Endpoint to individual schemas:
-@api.route('/schemas/<string:schema_name>')
-class Schemas(Resource):
+@api.route('/v1/template-schema/<string:schema_version>')
+class schemaJSON(Resource):
 
-    # All schemas are loaded from the correct location:
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    def get(self, schema_version):
 
-    def get(self, schema_name):
+        # Get all versions:
+        sv = schemaVersioning()
+        supported_versions = sv.get_versions()
 
-        # Unknown schema:
-        if not schema_name in Configuration.schemas:
-            return({'error' : 'Unknown schema'})
+        # Is it a supported version:
+        if not schema_version in supported_versions:
+            return {
+                'error' : 'Unknown schema versions',
+                'supported_versions': supported_versions
+            }
 
-        # Read file:
-        schema_df = eu.schema_reader(schema_name)
+        # Extract json schema:
+        schemaDataFrames = sv.read_schema(schema_version)
+        # return { 'sheets' : list(schemaDataFrames.keys())}
 
-        # Known schema:
-        schema = jsonSchemaBuilder(schema_name)
-        schema.addTable(schema_df)
-        return schema.get_schema()
+        JSON_builder = jsonSchemaBuilder(schema_version, triggerRow = Configuration.triggerRow)
+        for sheet, df in schemaDataFrames.items():
+            JSON_builder.addTable(sheetName = sheet, inputDataFrame=df)
+
+        return JSON_builder.get_schema()
+
 
 # Setting log level:
 def _set_log_level(LOG_CONF, LOG_LEVEL):

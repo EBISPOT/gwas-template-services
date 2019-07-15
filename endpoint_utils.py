@@ -52,31 +52,6 @@ def filter_parser(filterParameters, tabname, schemaDf):
     schemaDf = schemaDf.reset_index(drop=True)
     return(schemaDf)
 
-
-def schema_reader(schema_name):
-    """
-
-    :param schema_name: This is the name of the schema eg. study, association etc.
-    :type str
-    :return: dataframe with the
-    """
-    # # List of schemas that needs to be served:
-    # schemas = {
-    #     'study': '/schema_definitions/study_schema.xlsx',
-    #     'association': '/schema_definitions/association_schema.xlsx',
-    #     'sample': '/schema_definitions/sample_schema.xlsx',
-    #     'note': '/schema_definitions/notes_schema.xlsx'
-    # }
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
-    try:
-        schema_dataframe = pd.read_excel(dir_path + conf.schemas[schema_name], index_col=False)
-        schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
-        return schema_dataframe
-    except KeyError as e:
-        return '[Error] Schema: {} is not found in the configuration. Available schemas: {}'.format(schema_name, list(conf.schemas.keys()))
-
-
 def set_log_path(conf):
     conf.LOG_CONF['handlers'][conf.LOGGER_HANDLER]['filename'] = conf.logging_path + "/" + conf.LOGGER_LOG
     return conf.LOG_CONF

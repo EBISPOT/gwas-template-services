@@ -3,10 +3,6 @@ import os
 
 class Configuration():
 
-    # Path where the template files are saved:
-    rootPath = os.path.dirname(os.path.realpath(__file__))
-    uploadFolder = '{}/../uploadedTemplates'.format(rootPath)  #'/Users/dsuveges/Project/gwas-template-services/uploadedTemplates'
-
     # List of schemas that needs to be served:
     schemas = {
         'study': '/schema_definitions/study_schema.xlsx',
@@ -41,6 +37,12 @@ class Configuration():
             'study': ['background_efo_trait']
         },
     }
+
+    # Schema version:
+    schemaVersion = "1.0"
+
+    # Data line separator:
+    triggerRow = "Add your data below this line"
 
     # Logging related configuration:
     logging_path = "./logs"
@@ -81,4 +83,5 @@ class Configuration():
             },
         }
     }
+
 
