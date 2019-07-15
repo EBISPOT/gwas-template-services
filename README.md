@@ -4,8 +4,8 @@ Application to provide template related services for the deposition interface
 
 ## Installation
 
-1. Install miniconda
-2. Clone repo
+1.   Install miniconda
+2.   Clone repo
 
 ```bash
 cd ${APPROOT}
@@ -13,7 +13,7 @@ git clone https://github.com/EBISPOT/gwas-template-services
 cd gwas-template-services
 ```
 
-2. Create environment based on the environment file
+2.   Create environment based on the environment file
 
 ```bash
 ENVNAME=template_serv
@@ -21,7 +21,7 @@ conda env create -f ${APPROOT}/gwas-template-services/environment.yml \
     --prefix ${MINICONDA}/envs/${ENVNAME}
 ```
 
-3. Activate environment and install local packages
+3.   Activate environment and install local packages
 
 ```bash
 conda activate ${ENVNAME}
