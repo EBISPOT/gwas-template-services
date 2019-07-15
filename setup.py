@@ -8,11 +8,12 @@ included in this repository
 setup(
     name='templateServices',
     version='0.1',
-    packages=['config', 'validation', 'template'],
+    packages=['config', 'validation', 'template','schema_definitions'],
     entry_points={
         "console_scripts": ['gwas-spreadsheet_builder = template.spreadsheet_builder:main',
                             'gwas-JSON_schema_builder = template.schemaJson_builder:main',
-                            'gwas-validator = validation.validator:main']
+                            'gwas-validator = validation.validator:main'
+                            'gwas_schema_definitions = schema_definitions.schemaVersion:main']
     },
     url='https://github.com/EBISPOT/gwas-template-services',
     license='',

@@ -128,6 +128,7 @@ def main():
 
     args = parser.parse_args()
     outputFileName = args.output
+    schemaVersion = args.schemaVersion
 
     # Initialize spreadsheet object:
     spreadsheet_builder = SpreadsheetBuilder(output_file=outputFileName)

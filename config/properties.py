@@ -42,4 +42,8 @@ class Configuration():
         },
     }
 
+    # Schema version:
+    schemaVersion = "1.0"
+
+
 
