@@ -1,6 +1,6 @@
 # gwas-template-services
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/63c9e20a0f6b428f8cbd8ad294beeb68)](https://app.codacy.com/app/DSuveges/gwas-template-services?utm_source=github.com&utm_medium=referral&utm_content=EBISPOT/gwas-template-services&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/63c9e20a0f6b428f8cbd8ad294beeb68)](https://app.codacy.com/app/DSuveges/gwas-template-services?utm_source=github.com&utm_medium=referral&utm_content=EBISPOT/gwas-template-services&utm_campaign=Badge_Grade_Dashboard) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/a5ee270cf0e449be88980397ee49945d)](https://www.codacy.com/app/DSuveges/gwas-template-services?utm_source=github.com&utm_medium=referral&utm_content=EBISPOT/gwas-template-services&utm_campaign=Badge_Coverage)[![Build Status](https://travis-ci.org/EBISPOT/gwas-template-services.svg?branch=Add_testing)](https://travis-ci.org/EBISPOT/gwas-template-services)
 
 Application to provide template related services for the deposition interface
 
