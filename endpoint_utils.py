@@ -65,3 +65,11 @@ def register(logger_name):
     }
     LOG_CONF = set_log_path(properties)
     logging.config.dictConfig(LOG_CONF)
+
+
+def _set_log_level(LOG_CONF, LOG_LEVEL):
+    for handler in LOG_CONF['handlers']:
+        LOG_CONF['handlers'][handler]['level'] = LOG_LEVEL
+    for loggr in LOG_CONF['loggers']:
+        LOG_CONF['loggers'][loggr]['level'] = LOG_LEVEL
+    return LOG_CONF

@@ -18,7 +18,13 @@ from schema_definitions.schemaVersion import schemaVersioning
 import endpoint_utils as eu
 
 app = Flask(__name__)
-api = Api(app)
+
+# Initialize API with swagger parameters:
+api = Api(app, default=u'Template services',
+          default_label=u'GWAS Catalog template services',
+          title = 'API documentation')
+
+# Enabling cross-site scripting (might need to be removed later):
 cors = CORS(app)
 
 # Parameters for filtering template spreadsheets:
@@ -153,7 +159,6 @@ class templateGenerator(Resource):
         )
 
 
-
 @api.route('/v1/template-schema')
 class SchemaList(Resource):
     def get(self):
@@ -218,4 +223,14 @@ def hello():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+    # Setting log level if gunicorn is started with this parameter:
+    if '--log-level' in sys.argv:
+        gunicorn_logger = logging.getLogger('gunicorn.error')
+        print("[Info] Setting log level to {}".format(gunicorn_logger.level))
+        Configuration.LOG_LEVEL = gunicorn_logger.level
+
+    print("[Info] Log level to {}".format(Configuration.LOG_LEVEL))
+    Configuration.LOG_CONF = eu._set_log_level(LOG_CONF=Configuration.LOG_CONF, LOG_LEVEL=Configuration.LOG_LEVEL)
+    logging.config.dictConfig(Configuration.LOG_CONF)
 
