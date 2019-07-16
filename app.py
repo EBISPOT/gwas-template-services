@@ -1,8 +1,6 @@
 from flask import Flask, request, render_template, send_file
 from flask_restplus import Resource, Api
 from flask_cors import CORS
-import pandas as pd
-import os
 
 # Import logging related functions:
 from logging.config import dictConfig
@@ -52,15 +50,15 @@ class templateGenerator(Resource):
         if 'backgroundTrait' in args: filterParameters['backgroundTrait'] = True if args['backgroundTrait'] == "true" else False
         if 'effect' in args: filterParameters['effect'] = args['effect']
 
-        # Initialize spreadsheet builder object:
-        spreadsheet_builder = SpreadsheetBuilder()
-
-        print(filterParameters)
-
         # Reading all schema files into a single ordered dictionary:
         schemaVersion = Configuration.schemaVersion
         sv = schemaVersioning()
         schemaDataFrames = sv.read_schema(schemaVersion)
+
+        # Initialize spreadsheet builder object:
+        spreadsheet_builder = SpreadsheetBuilder(version=schemaVersion)
+
+        print(filterParameters)
 
         for schema in schemaDataFrames.keys():
 

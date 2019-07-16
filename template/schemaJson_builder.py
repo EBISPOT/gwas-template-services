@@ -19,7 +19,7 @@ class jsonSchemaBuilder:
         # Initialize sheet in the JSON object:
         self.JSON_schema[sheetName] = {
             'triggerRow' : self.triggerRow,
-            'studyTagColumnName' : 'Study tag'
+            'studyTagColumnName' : 'study_tag'
         }
 
         # Adding df to schema:
