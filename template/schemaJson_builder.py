@@ -72,18 +72,22 @@ def main():
 
     parser.add_argument('-f', '--file', dest='file', help='Excel spreadsheet file describing the schema.', required=True)
     parser.add_argument('-n', '--name', dest='name', help='Name of schema eg. association.', required = True )
+    parser.add_argument('-v', '--version', dest='schemaVersion', help='Version of the schema.', required=True)
+    parser.add_argument('-t', '--triggerRow', dest='triggerRow', help='Row label signaling where the data is going to be read.', required=False, default="Add your data below this line")
 
     args = parser.parse_args()
     inputFileName = args.file
     schemaType = args.name
+    triggerRow = args.triggerRow
+    schemaVersion = args.schemaVersion
 
     # Open input file into a dataframe:
     inputDataFrame = pd.read_excel(inputFileName, index_col=False)
 
     # Generate json schema:
-    schemaBuilder = jsonSchemaBuilder(schemaType)
-    schemaBuilder.addTable(inputDataFrame)
-    # schemaBuilder.saveJson(outputFileName) # File is not saved!
+    schemaBuilder = jsonSchemaBuilder(schemaVersion = schemaVersion, triggerRow=triggerRow)
+    schemaBuilder.addTable(sheetName=schemaType, inputDataFrame=inputDataFrame)
+
     print(schemaBuilder.get_schema())
 
 

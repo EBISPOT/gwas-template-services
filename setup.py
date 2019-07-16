@@ -1,9 +1,7 @@
 from distutils.core import setup
 
-'''
-This script defines the installation and packaging properties for the python packages
-included in this repository
-'''
+# This script defines the installation and packaging properties for the python packages
+# included in this repository
 
 setup(
     name='templateServices',
