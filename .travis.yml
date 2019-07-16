@@ -12,6 +12,6 @@ install:
   - python setup.py -q install
   - pip install codacy-coverage
 script:
-  - pytest
+  - coverage run -m pytest
   - coverage xml
   - python-codacy-coverage -r coverage.xml

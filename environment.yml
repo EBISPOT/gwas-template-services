@@ -43,7 +43,6 @@ dependencies:
   - pytz=2019.1
   - readline=7.0
   - setuptools=41.0.1
-  - simplejson=3.8.1
   - six=1.12.0
   - sqlite=3.28.0
   - tk=8.6.9
