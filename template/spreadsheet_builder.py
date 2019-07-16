@@ -26,7 +26,7 @@ class SpreadsheetBuilder:
     formatHighlightManadatory = {'bold': True, 'bg_color': '#F2CBA9',
                                  'font_size': 12, 'valign': 'vcenter','locked': True}
 
-    def __init__(self, output_file = None):
+    def __init__(self, output_file = None, version = None):
 
         if not output_file:
             output_file = io.BytesIO()
@@ -36,6 +36,12 @@ class SpreadsheetBuilder:
         # Define workbook object:
         self.writer_object = pd.ExcelWriter(output_file, engine ='xlsxwriter')
         self.workbook = self.writer_object.book
+
+        # Set version if specified:
+        if version:
+            self.workbook.set_properties({
+                'comments' : 'schemaVersion={}'.format(version),
+                'subject': 'GWAS Catalog template spreadsheet.'})
 
         # Define formatting for the column headers:
         self.header_format = self.workbook.add_format(self.formatHeader)
