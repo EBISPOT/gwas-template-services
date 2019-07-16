@@ -4,6 +4,7 @@ import os
 import glob
 import re
 from argparse import ArgumentParser
+import logging
 
 
 class schemaVersioning(object):
@@ -38,8 +39,8 @@ class schemaVersioning(object):
                 schema_dataframe = pd.read_excel(filename, index_col=False)
                 schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
                 schema_dfs[sheet] = schema_dataframe
-            except:
-                print('[Warning] The schema file ({}) was not found.'.format(filename))
+            except FileNotFoundError:
+                logging.error('Schema file ({}) was not found.'.format(filename))
                 continue
 
         # return ordered dict:

@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, send_file
-from flask_restplus import Resource, Api, reqparse
+from flask_restplus import Resource, Api
 from flask_cors import CORS
 import pandas as pd
 import os
@@ -34,82 +34,6 @@ templateParams.add_argument('haplotype', type=str, required=False, help='If the 
 templateParams.add_argument('snpxsnp', type=str, required=False, help='If the associations are SNP x SNP interactions or not.')
 templateParams.add_argument('effect', type=str, required=False, help='How the effect is expressed.')
 templateParams.add_argument('backgroundTrait', type=str, required=False, help='If backgroundtrait is present or not.')
-
-
-# This function calls validation for a file uploaded and the file is given as a parameter:
-@api.route('/v1/validation')
-class HandleUploadedFile(Resource):
-    def get(self):
-
-        # Extracting parameters:
-        args = parser.parse_args()
-        submissionId = args['submissionId']
-        fileName = args['fileName']
-
-        # File with path:
-        xlsxFilePath = '{}/{}/{}'.format(Configuration.uploadFolder, submissionId, fileName)
-
-        # If the file is not found:
-        if not os.path.isfile(xlsxFilePath):
-            eu.updateFileValidation(submissionId=submissionId, status= 0, message= "Uploaded file was not found")
-            return {
-                "status" : "failed",
-                "message" : "Uploaded file was not found"
-            }
-
-        # Testing for opening:
-        try:
-            template_xlsx = pd.ExcelFile(xlsxFilePath)
-        except:
-            eu.updateFileValidation(submissionId=submissionId, status=0, message="Uploaded file could not be opened as an excel file.")
-            return {
-                "status" : "failed",
-                "message" : "Uploaded file could not be opened as an excel file."
-            }
-
-        # Try to open all sheets:
-        spread_sheets = {}
-        missing_sheets = []
-
-        for sheet in  ['studies', 'associations', 'samples']:
-            try:
-                spread_sheets[sheet] = open_template(template_xlsx, sheet)
-            except:
-                missing_sheets.append(sheet)
-
-        if len(missing_sheets) > 0:
-            eu.updateFileValidation(submissionId=submissionId, status=0,
-                                    message="Some sheets were missing from the file.")
-            return {
-                    "status": "failed",
-                    "message": "Some sheets were missing from the file",
-                    "missingSheets": missing_sheets
-                }
-
-        # Check for study tags:
-        missing_tags = check_study_tags(spread_sheets)
-
-        if len(missing_tags) > 0:
-            eu.updateFileValidation(submissionId=submissionId, status=0,
-                                    message="Some study tags were not listed in the study sheet.")
-            return {
-                "status": "failed",
-                "message": "Some study tags were not listed in the study sheet.",
-                "missingTags": missing_tags
-            }
-
-        # File looks good. Update DB:
-        eu.updateFileValidation(submissionId=submissionId, status=1,
-                                message="First round of validation passed.")
-        # Generate ftp directories:
-        eu.generateFtpFolders(submissionId, spread_sheets['studies']['Study tag'].tolist())
-
-        # Return success;
-        return {
-            "status": "success",
-            "message": "First round of validation passed."
-        }
-
 
 # REST endpoint for providing the template spreadsheets:
 @api.route('/v1/templates')
@@ -222,7 +146,7 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
 
     # Setting log level if gunicorn is started with this parameter:
     if '--log-level' in sys.argv:

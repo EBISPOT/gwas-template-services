@@ -1,5 +1,5 @@
-import os
 
+# All configurations required for the application:
 
 class Configuration():
 
