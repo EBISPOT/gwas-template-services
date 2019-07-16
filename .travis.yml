@@ -1,0 +1,17 @@
+language: python
+python:
+  - "3.6"
+branches:
+  only:
+  - master
+  - Add_testing
+before_install:
+  - mkdir logs
+install:
+  - pip install -r requirements.txt
+  - python setup.py -q install
+  - pip install codacy-coverage
+script:
+  - pytest
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
