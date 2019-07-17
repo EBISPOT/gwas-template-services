@@ -4,13 +4,12 @@ from flask_cors import CORS
 import sys
 
 # Import logging related functions:
-from logging.config import dictConfig
+# from logging.config import dictConfig
 import logging
 
 # Importing custom modules:
 from template.spreadsheet_builder import SpreadsheetBuilder
 from template.schemaJson_builder import jsonSchemaBuilder
-from validation.validator import open_template, check_study_tags
 from config.properties import Configuration
 from schema_definitions.schemaVersion import schemaVersioning
 

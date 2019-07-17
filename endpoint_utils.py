@@ -1,5 +1,4 @@
-import pandas as pd
-import os
+
 import logging
 from logging import config
 
@@ -52,19 +51,10 @@ def filter_parser(filterParameters, tabname, schemaDf):
     schemaDf = schemaDf.reset_index(drop=True)
     return(schemaDf)
 
+
 def set_log_path(conf):
     conf.LOG_CONF['handlers'][conf.LOGGER_HANDLER]['filename'] = conf.logging_path + "/" + conf.LOGGER_LOG
     return conf.LOG_CONF
-
-def register(logger_name):
-    set_p.set_properties()
-
-    properties.LOG_CONF['loggers'][logger_name] = {
-        'handlers': ['logger'],
-        'propagate': False
-    }
-    LOG_CONF = set_log_path(properties)
-    logging.config.dictConfig(LOG_CONF)
 
 
 def _set_log_level(LOG_CONF, LOG_LEVEL):
