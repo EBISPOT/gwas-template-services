@@ -7,9 +7,9 @@ import io
 pandas.io.formats.excel.header_style = None
 
 class SpreadsheetBuilder:
-    '''
+    """
     This class generates formatted template files in xlsx format based on the provided dataframes.
-    '''
+    """
 
     # Data line marker:
     dataMarker = 'Add your data below this line'
@@ -118,7 +118,7 @@ class SpreadsheetBuilder:
                 description += ' Values between {} and {}'.format(row['LOWER'], row['UPPER'])
 
             return description
-        
+
         # Creating a dataframe for the excel:
         templateSheet = pd.DataFrame([df.HEADER.tolist()], columns = df.apply(_generate_description, axis = 1))
         return templateSheet
