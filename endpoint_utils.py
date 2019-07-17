@@ -1,6 +1,4 @@
 
-import logging
-from logging import config
 
 # Import custom functions:
 from config.properties import Configuration as conf
