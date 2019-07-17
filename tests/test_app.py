@@ -1,17 +1,16 @@
 import unittest
 import sys
 import os
+from config.properties import Configuration
 
+# Adding app folder to Python path:
 appFolder = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(appFolder+'/../')
-print(sys.path)
 
 from app import app
 
 
-from config.properties import Configuration
-
-class BasicTestCase(unittest.TestCase):
+class TestWebApplication(unittest.TestCase):
 
     # Create a tester instance of the application:
     tester = app.test_client()

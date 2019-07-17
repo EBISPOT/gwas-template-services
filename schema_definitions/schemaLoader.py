@@ -7,16 +7,24 @@ from argparse import ArgumentParser
 import logging
 
 
-class schemaVersioning(object):
+class unknownShemaVersionError(Exception):
+    """Unsupported schema version was requested."""
+    pass
+
+
+class schemaLoader(object):
 
     sheets = ['study', 'association', 'sample', 'notes']
     schemaFolder = os.path.dirname(os.path.realpath(__file__))
     schemaFilePattern = '%s/%s_schema_v%s.xlsx'
 
     def __init__ (self):
+
+        self.allVersions = self.__schema_versions()
         return None
 
-    def get_versions(self):
+    # Get a list of available versions:
+    def __schema_versions(self):
         availableVersions = []
 
         # Lisiting all Excel files:
@@ -28,7 +36,18 @@ class schemaVersioning(object):
         # Return list with version:
         return(availableVersions)
 
+    # Interface to get all available versions:
+    def get_versions(self):
+        return self.allVersions
+
+    # Open schema for a given version:
     def read_schema(self, version):
+
+        # Raising error if unsupported schema is requested:
+        if not version in self.allVersions:
+            raise unknownShemaVersionError("[Error] The requested schema version ({}) is not supported.".format(version))
+
+        # A dictionary is populated with all the spreadsheets read as pandas dataframes:
         schema_dfs = OrderedDict()
 
         # Looping through all sheets, generating file name and load the file:
@@ -59,7 +78,7 @@ def main():
         schemaVersion = '1.0'
 
     # Initialize schema versioning object:
-    sv = schemaVersioning()
+    sv = schemaLoader()
 
     # Get available versions:
     availableVersions = sv.get_versions()
@@ -68,7 +87,6 @@ def main():
     # Load all schemas for the specified version:
     schemas = sv.read_schema(schemaVersion)
     print('[Info] The following spreadsheets for v.{} were successfully loaded: {}'.format(schemaVersion, ', '.join(schemas.keys())))
-
 
 
 if __name__ == '__main__':

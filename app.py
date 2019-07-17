@@ -11,7 +11,7 @@ import logging
 from template.spreadsheet_builder import SpreadsheetBuilder
 from template.schemaJson_builder import jsonSchemaBuilder
 from config.properties import Configuration
-from schema_definitions.schemaVersion import schemaVersioning
+from schema_definitions.schemaLoader import schemaLoader
 
 import endpoint_utils as eu
 
@@ -52,7 +52,7 @@ class templateGenerator(Resource):
 
         # Reading all schema files into a single ordered dictionary:
         schemaVersion = Configuration.schemaVersion
-        sv = schemaVersioning()
+        sv = schemaLoader()
         schemaDataFrames = sv.read_schema(schemaVersion)
 
         # Initialize spreadsheet builder object:
@@ -86,7 +86,7 @@ class SchemaList(Resource):
     def get(self):
 
         # Get all versions:
-        sv = schemaVersioning()
+        sv = schemaLoader()
         supported_versions = sv.get_versions()
 
         # Initialize return data:
@@ -104,7 +104,7 @@ class schemaJSON(Resource):
     def get(self, schema_version):
 
         # Get all versions:
-        sv = schemaVersioning()
+        sv = schemaLoader()
         supported_versions = sv.get_versions()
 
         # Is it a supported version:

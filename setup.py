@@ -12,7 +12,7 @@ setup(
     entry_points={
         "console_scripts": ['gwas-spreadsheet_builder = template.spreadsheet_builder:main',
                             'gwas-JSON_schema_builder = template.schemaJson_builder:main',
-                            'gwas_schema_definitions = schema_definitions.schemaVersion:main']
+                            'gwas_schema_loader = schema_definitions.schemaLoader:main']
     },
     url='https://github.com/EBISPOT/gwas-template-services',
     license='',
