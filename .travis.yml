@@ -8,9 +8,8 @@ branches:
 before_install:
   - mkdir logs
 install:
-  - pip install -r requirements.txt
   - python setup.py -q install
-  - pip install codacy-coverage
+  - pip install -r requirements.txt
 script:
   - coverage run -m pytest
   - coverage xml
