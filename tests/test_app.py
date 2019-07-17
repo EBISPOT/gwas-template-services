@@ -43,7 +43,7 @@ class BasicTestCase(unittest.TestCase):
         # Do we have many elements:
         self.assertGreater(len(schema.keys()), 3)
 
-    def test_endpoint_template_schema_supported_version(self):
+    def test_endpoint_template_schema_wrong_version(self):
         # Get a wrong schema version:
         wrongSchema = 'cicaful'
 
