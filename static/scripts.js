@@ -5,8 +5,9 @@ function parseForm() {
     // Parsing radio buttons
     for(var field of ["curator", "haplotype", "effect", "backgroundTrait"]){
 
-        var form = document.getElementById("templateCustomizer")
-        parameters.append(field, form.elements[field].value)
+        var form = document.getElementById("templateCustomizer");
+        var value = form.elements[field].value;
+        parameters.append(field, value);
     }
 
     // Check if user uploads summary stats:
