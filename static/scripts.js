@@ -1,6 +1,8 @@
 // Function to parse radio buttons:
-function getRadio() {
+function parseForm() {
     var parameters = new FormData();
+
+    // Parsing radio buttons
     for(var field of ["curator", "haplotype", "effect", "backgroundTrait"]){
         var radios = document.getElementsByName(field);
 
@@ -12,6 +14,15 @@ function getRadio() {
             }
         }
     }
+
+    // Check if user uploads summary stats:
+    if (document.getElementById('summaryStats').checked){
+        accessionIDs = document.getElementById('accessionIDs').value;
+        accessionIDs = accessionIDs.replace(/\s/g, "").split(",");
+        console.log(accessionIDs);
+        parameters.append('accessionIDs', accessionIDs)
+    }
+    console.log(parameters)
     return(parameters);
 }
 
@@ -25,7 +36,7 @@ function saveBlob(blob, fileName) {
 
 // Call API to generate template:
 function generateTemplate(){
-    var parameters = getRadio();
+    var parameters = parseForm();
 
     // Submit POST request:
     var xhr = new XMLHttpRequest();
