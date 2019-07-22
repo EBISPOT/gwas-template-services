@@ -16,13 +16,11 @@ function parseForm() {
     }
 
     // Check if user uploads summary stats:
-    if (document.getElementById('summaryStats').checked){
-        accessionIDs = document.getElementById('accessionIDs').value;
+    if (document.getElementById("summaryStats").checked){
+        var accessionIDs = document.getElementById("accessionIDs").value;
         accessionIDs = accessionIDs.replace(/\s/g, "").split(",");
-        console.log(accessionIDs);
-        parameters.append('accessionIDs', accessionIDs)
+        parameters.append('accessionIDs', accessionIDs);
     }
-    console.log(parameters)
     return(parameters);
 }
 

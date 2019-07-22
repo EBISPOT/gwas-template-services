@@ -3,7 +3,6 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 import pandas as pd
 from argparse import ArgumentParser
 import io
-import numpy as np
 
 # Resetting pandas dataframe header:
 pandas.io.formats.excel.header_style = None
@@ -137,7 +136,7 @@ class SpreadsheetBuilder:
             self.writer_object.sheets[tabname].write(cell, value)
 
     def _prepare_dataframe(self, df):
-        
+
         # As part of the table preparation, the description field needs to be generated:
         def _generate_description(row):
             description = row['DESCRIPTION'] if isinstance(row['DESCRIPTION'], str) else ''
