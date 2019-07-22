@@ -4,10 +4,8 @@ function parseForm() {
 
     // Parsing radio buttons
     for(var field of ["curator", "haplotype", "effect", "backgroundTrait"]){
-
-        var form = document.getElementById("templateCustomizer");
-        var value = form.elements[field].value;
-        parameters.append(field, value);
+        var radioValue = $(`input[name=${field}]:checked`).val();
+        parameters.append(field, radioValue);
     }
 
     // Check if user uploads summary stats:
@@ -47,8 +45,8 @@ function generateTemplate(){
             var fileName = "template.xlsx";
             saveBlob(blob, fileName);
         }
-    }
+    };
 }
 
-document.getElementById("generate").onclick = function(){ generateTemplate();}
+document.getElementById("generate").onclick = function(){ generateTemplate();};
 
