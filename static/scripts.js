@@ -4,22 +4,16 @@ function parseForm() {
 
     // Parsing radio buttons
     for(var field of ["curator", "haplotype", "effect", "backgroundTrait"]){
-        var radios = document.getElementsByName(field);
 
-        // Looping through all buttons and save the value which is selected:
-        for (var radio of radios) {
-            if ( radio.checked ) {
-                parameters.append(field, radio.value);
-                break;
-            }
-        }
+        var form = document.getElementById("templateCustomizer")
+        parameters.append(field, form.elements[field].value)
     }
 
     // Check if user uploads summary stats:
     if (document.getElementById("summaryStats").checked){
         var accessionIDs = document.getElementById("accessionIDs").value;
         accessionIDs = accessionIDs.replace(/\s/g, "").split(",");
-        parameters.append('accessionIDs', accessionIDs);
+        parameters.append("accessionIDs", accessionIDs);
     }
     return(parameters);
 }
