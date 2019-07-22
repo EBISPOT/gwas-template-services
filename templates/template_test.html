@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Test page demonstrate template generator</title>
     <link rel="stylesheet" href="static/style.css">
+    <script src="http://pure.github.io/pure/libs/pure.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
 </head>
 <body>
 
@@ -27,7 +31,7 @@
 </br>
 <div class="filter" id="filter">
     <div class="curator">
-        <form>
+        <form id = "templateCustomizer">
             <label for="curator">Are you a curator? </label>
             <input type="radio" name="curator" value="true">Yes
             <input type="radio" name="curator" value="false" checked>No<br>
@@ -43,6 +47,11 @@
             <label for="backgroundTrait">Are background traits recorded?</label>
             <input type="radio" name="backgroundTrait" value="true">Yes
             <input type="radio" name="backgroundTrait" value="false" checked>No<br>
+
+            <p style="padding-top: 5px; padding-bottom: 2px">If user provides study accessions as a comma separated list to upload summary statistics,
+                </br>a corresponding template sheet is generated with pre-filled accession IDs.</p>
+            <input type="checkbox" id="summaryStats" >I want to submit summary stats for an existsing publication.<br>
+            List of study accessions: <input type="text" id="accessionIDs" name="accessions" value="GCST007280, GCST007285, GCST007286" size="100"><br>
         </form>
     </div>
     </br>

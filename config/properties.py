@@ -3,39 +3,54 @@
 
 class Configuration():
 
-    # List of schemas that needs to be served:
-    schemas = {
-        'study': '/schema_definitions/study_schema.xlsx',
-        'association': '/schema_definitions/association_schema.xlsx',
-        'sample': '/schema_definitions/sample_schema.xlsx',
-        'note': '/schema_definitions/notes_schema.xlsx'
-    }
-
     # Template filter definitions:
     filters = {
         'curator' : {
-            'note' : ['study_tag', 'note', 'note_subject', 'status'],
-            'study' : ['efo_trait'],
-            'sample' : ['ancestry']
+            'addColumn' : {
+                'notes': ['study_tag', 'note', 'note_subject', 'status'],
+                'study': ['efo_trait'],
+                'sample': ['ancestry']
+            }
         },
         'haplotype' : {
-            'association' : ['haplotype_id']
+            'addColumn': {
+                'association' : ['haplotype_id']
+            }
         },
         'beta' : {
-            'association': ['beta', 'beta_unit', 'standard_error']
+            'addColumn': {
+                'association': ['beta', 'beta_unit', 'standard_error']
+            }
         },
         'OR' : {
-            'association': ['odds_ratio', 'ci_lower', 'ci_upper']
+            'addColumn': {
+                'association': ['odds_ratio', 'ci_lower', 'ci_upper']
+            }
         },
         'backgroundTrait' : {
-            'study' : ['background_trait']
+            'addColumn': {
+                'study' : ['background_trait']
+            }
         },
         'snpxsnp' : {
 
         },
         'curator_backgroundTrait': {
-            'study': ['background_efo_trait']
+            'addColumn': {
+                'study': ['background_efo_trait']
+            }
         },
+
+        'accessionIDs' : {
+            'removeColumn': {
+                'study': ['array_manufacturer', 'genotyping_technology', 'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description', 'trait'],
+                'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category', 'ancestry', 'ancestry_description', 'country_recruitement'],
+                'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'effect_allele', 'other_allele', 'effect_allele_frequency']
+            },
+            'addColumn': {
+                'study': ['study_accession']
+            }
+        }
     }
 
     # Schema version:

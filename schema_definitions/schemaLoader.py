@@ -7,41 +7,60 @@ from argparse import ArgumentParser
 import logging
 
 
-class schemaVersioning(object):
+class unknownShemaVersionError(Exception):
+    """Unsupported schema version was requested."""
+    pass
 
-    sheets = ['study', 'association', 'sample', 'notes']
+
+class schemaLoader(object):
+
     schemaFolder = os.path.dirname(os.path.realpath(__file__))
-    schemaFilePattern = '%s/%s_schema_v%s.xlsx'
+    schemaFilePattern = '%s/template_schema_v%s.xlsx'
 
     def __init__ (self):
+
+        self.allVersions = self.__schema_versions()
         return None
 
-    def get_versions(self):
+    # Get a list of available versions:
+    def __schema_versions(self):
         availableVersions = []
 
         # Lisiting all Excel files:
         for schemaFile in glob.glob(self.schemaFolder + "/*.xlsx"):
-            m = re.search(r"_schema_v(.+?)\.xlsx", schemaFile)
+            m = re.search(r"template_schema_v(.+?)\.xlsx", schemaFile)
             if m and m.group(1) not in availableVersions:
                 availableVersions.append(m.group(1))
 
         # Return list with version:
         return(availableVersions)
 
+    # Interface to get all available versions:
+    def get_versions(self):
+        return self.allVersions
+
+    # Open schema for a given version:
     def read_schema(self, version):
+
+        # Raising error if unsupported schema is requested:
+        if not version in self.allVersions:
+            raise unknownShemaVersionError("[Error] The requested schema version ({}) is not supported.".format(version))
+
+        # A dictionary is populated with all the spreadsheets read as pandas dataframes:
         schema_dfs = OrderedDict()
 
         # Looping through all sheets, generating file name and load the file:
-        for sheet in self.sheets:
-            filename = self.schemaFilePattern % (self.schemaFolder, sheet, version)
+        filename = self.schemaFilePattern % (self.schemaFolder, version)
+        try:
+            xls = pd.ExcelFile(filename, index_col=False)
+        except FileNotFoundError:
+            logging.error('Schema file ({}) was not found.'.format(filename))
+            return(schema_dfs)
 
-            try:
-                schema_dataframe = pd.read_excel(filename, index_col=False)
-                schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
-                schema_dfs[sheet] = schema_dataframe
-            except FileNotFoundError:
-                logging.error('Schema file ({}) was not found.'.format(filename))
-                continue
+        for sheet in xls.sheet_names:
+            schema_dataframe = pd.read_excel(xls, sheet)
+            schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
+            schema_dfs[sheet] = schema_dataframe
 
         # return ordered dict:
         return(schema_dfs)
@@ -59,7 +78,7 @@ def main():
         schemaVersion = '1.0'
 
     # Initialize schema versioning object:
-    sv = schemaVersioning()
+    sv = schemaLoader()
 
     # Get available versions:
     availableVersions = sv.get_versions()
@@ -68,7 +87,6 @@ def main():
     # Load all schemas for the specified version:
     schemas = sv.read_schema(schemaVersion)
     print('[Info] The following spreadsheets for v.{} were successfully loaded: {}'.format(schemaVersion, ', '.join(schemas.keys())))
-
 
 
 if __name__ == '__main__':

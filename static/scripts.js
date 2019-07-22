@@ -1,16 +1,18 @@
 // Function to parse radio buttons:
-function getRadio() {
+function parseForm() {
     var parameters = new FormData();
-    for(var field of ["curator", "haplotype", "effect", "backgroundTrait"]){
-        var radios = document.getElementsByName(field);
 
-        // Looping through all buttons and save the value which is selected:
-        for (var radio of radios) {
-            if ( radio.checked ) {
-                parameters.append(field, radio.value);
-                break;
-            }
-        }
+    // Parsing radio buttons
+    for(var field of ["curator", "haplotype", "effect", "backgroundTrait"]){
+        var radioValue = $(`input[name=${field}]:checked`).val();
+        parameters.append(field, radioValue);
+    }
+
+    // Check if user uploads summary stats:
+    if (document.getElementById("summaryStats").checked){
+        var accessionIDs = document.getElementById("accessionIDs").value;
+        accessionIDs = accessionIDs.replace(/\s/g, "").split(",");
+        parameters.append("accessionIDs", accessionIDs);
     }
     return(parameters);
 }
@@ -25,7 +27,7 @@ function saveBlob(blob, fileName) {
 
 // Call API to generate template:
 function generateTemplate(){
-    var parameters = getRadio();
+    var parameters = parseForm();
 
     // Submit POST request:
     var xhr = new XMLHttpRequest();
@@ -43,8 +45,8 @@ function generateTemplate(){
             var fileName = "template.xlsx";
             saveBlob(blob, fileName);
         }
-    }
+    };
 }
 
-document.getElementById("generate").onclick = function(){ generateTemplate();}
+document.getElementById("generate").onclick = function(){ generateTemplate();};
 

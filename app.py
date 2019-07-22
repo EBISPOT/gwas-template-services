@@ -11,7 +11,7 @@ import logging
 from template.spreadsheet_builder import SpreadsheetBuilder
 from template.schemaJson_builder import jsonSchemaBuilder
 from config.properties import Configuration
-from schema_definitions.schemaVersion import schemaVersioning
+from schema_definitions.schemaLoader import schemaLoader
 
 import endpoint_utils as eu
 
@@ -32,6 +32,8 @@ templateParams.add_argument('haplotype', type=str, required=False, help='If the 
 templateParams.add_argument('snpxsnp', type=str, required=False, help='If the associations are SNP x SNP interactions or not.')
 templateParams.add_argument('effect', type=str, required=False, help='How the effect is expressed.')
 templateParams.add_argument('backgroundTrait', type=str, required=False, help='If backgroundtrait is present or not.')
+templateParams.add_argument('accessionIDs', type=str, required=False, help='To generate summary stat sheet post all accession IDs.', action='append')
+
 
 # REST endpoint for providing the template spreadsheets:
 @api.route('/v1/templates')
@@ -50,15 +52,21 @@ class templateGenerator(Resource):
         if 'backgroundTrait' in args: filterParameters['backgroundTrait'] = True if args['backgroundTrait'] == "true" else False
         if 'effect' in args: filterParameters['effect'] = args['effect']
 
+        # Parsing accession IDs is a bit complex:
+        filterParameters['accessionIDs'] = []
+        if 'accessionIDs' in args and args['accessionIDs']:
+            for accessionID in args['accessionIDs']:
+                filterParameters['accessionIDs'] += accessionID.split(',')
+
         # Reading all schema files into a single ordered dictionary:
         schemaVersion = Configuration.schemaVersion
-        sv = schemaVersioning()
+        sv = schemaLoader()
         schemaDataFrames = sv.read_schema(schemaVersion)
+
+        print(filterParameters)
 
         # Initialize spreadsheet builder object:
         spreadsheet_builder = SpreadsheetBuilder(version=schemaVersion)
-
-        print(filterParameters)
 
         for schema in schemaDataFrames.keys():
 
@@ -66,7 +74,13 @@ class templateGenerator(Resource):
             filteredSchemaDataFrame = eu.filter_parser(filterParameters, schema, schemaDataFrames[schema])
 
             # Add spreadsheet if at least one column remained:
-            if len(filteredSchemaDataFrame): spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
+            if len(filteredSchemaDataFrame):
+                spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
+
+        # Adding data:
+        if filterParameters['accessionIDs']:
+            print(filterParameters['accessionIDs'])
+            spreadsheet_builder.add_values(tabname='study', colname='study_accession', data=filterParameters['accessionIDs'])
 
         # Once all spreadsheets added to the template, saving document:
         x = spreadsheet_builder.save_workbook()
@@ -86,7 +100,7 @@ class SchemaList(Resource):
     def get(self):
 
         # Get all versions:
-        sv = schemaVersioning()
+        sv = schemaLoader()
         supported_versions = sv.get_versions()
 
         # Initialize return data:
@@ -104,7 +118,7 @@ class schemaJSON(Resource):
     def get(self, schema_version):
 
         # Get all versions:
-        sv = schemaVersioning()
+        sv = schemaLoader()
         supported_versions = sv.get_versions()
 
         # Is it a supported version:
