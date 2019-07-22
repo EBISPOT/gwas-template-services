@@ -11,6 +11,6 @@ install:
   - python setup.py -q install
   - pip install -r requirements.txt
 script:
-  - pytest --cov-report html --cov sumstats_service --verbose
+  - coverage run -m pytest
   - coverage xml
   - python-codacy-coverage -r coverage.xml
