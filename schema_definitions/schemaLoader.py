@@ -14,9 +14,8 @@ class unknownShemaVersionError(Exception):
 
 class schemaLoader(object):
 
-    sheets = ['study', 'association', 'sample', 'notes']
     schemaFolder = os.path.dirname(os.path.realpath(__file__))
-    schemaFilePattern = '%s/%s_schema_v%s.xlsx'
+    schemaFilePattern = '%s/template_schema_v%s.xlsx'
 
     def __init__ (self):
 
@@ -29,7 +28,7 @@ class schemaLoader(object):
 
         # Lisiting all Excel files:
         for schemaFile in glob.glob(self.schemaFolder + "/*.xlsx"):
-            m = re.search(r"_schema_v(.+?)\.xlsx", schemaFile)
+            m = re.search(r"template_schema_v(.+?)\.xlsx", schemaFile)
             if m and m.group(1) not in availableVersions:
                 availableVersions.append(m.group(1))
 
@@ -51,16 +50,17 @@ class schemaLoader(object):
         schema_dfs = OrderedDict()
 
         # Looping through all sheets, generating file name and load the file:
-        for sheet in self.sheets:
-            filename = self.schemaFilePattern % (self.schemaFolder, sheet, version)
+        filename = self.schemaFilePattern % (self.schemaFolder, version)
+        try:
+            xls = pd.ExcelFile(filename, index_col=False)
+        except FileNotFoundError:
+            logging.error('Schema file ({}) was not found.'.format(filename))
+            return(schema_dfs)
 
-            try:
-                schema_dataframe = pd.read_excel(filename, index_col=False)
-                schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
-                schema_dfs[sheet] = schema_dataframe
-            except FileNotFoundError:
-                logging.error('Schema file ({}) was not found.'.format(filename))
-                continue
+        for sheet in xls.sheet_names:
+            schema_dataframe = pd.read_excel(xls, sheet)
+            schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
+            schema_dfs[sheet] = schema_dataframe
 
         # return ordered dict:
         return(schema_dfs)

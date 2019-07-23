@@ -53,15 +53,15 @@ class jsonSchemaBuilder:
         if not pd.isna(row['ACCEPTED']): columnData['acceptedValues'] = row['ACCEPTED'].split('|')
 
         return columnData
-    
+
     def saveJson(self, fileName = None):
-        if not fileName: 
+        if not fileName:
             fileName = '{}_schema.json'.format(self.schemaType)
             
         # Save file:
         with open(fileName, 'w') as outfile:
             json.dump(self.schema, outfile, indent=4)
-            
+
     def get_schema(self):
         return(self.JSON_schema)
 

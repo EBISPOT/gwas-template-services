@@ -1,4 +1,5 @@
 import pandas.io.formats.excel
+from xlsxwriter.utility import xl_rowcol_to_cell
 import pandas as pd
 from argparse import ArgumentParser
 import io
@@ -56,6 +57,9 @@ class SpreadsheetBuilder:
         self.setTextFormat = self.workbook.add_format()
         self.setTextFormat.set_num_format('@')
 
+        # Saving column names to this dictionary:
+        self._columnNames = {}
+
     def generate_workbook(self, tabname, dataframe):
         """
 
@@ -69,6 +73,9 @@ class SpreadsheetBuilder:
 
         # Generate the template dataframe:
         templateSheet = self._prepare_dataframe(dataframe)
+
+        # Saving column names:
+        self._columnNames[tabname] = dataframe.NAME.tolist()
 
         # Adding data to sheet:
         templateSheet.to_excel(self.writer_object, index=False, sheet_name=tabname)
@@ -98,9 +105,38 @@ class SpreadsheetBuilder:
     def save_workbook(self):
         self.workbook.close()
         return self.output_file
-        
+
+    def add_values(self, tabname, colname, data):
+        """
+        This function adds data to a given column of a given sheet
+
+        :param tabname:
+        :param colname:
+        :param data:
+        :return:
+        """
+
+        # Test if tab exists:
+        if tabname not in self.writer_object.sheets:
+            print("[Warning] {} tab does not exist in spreadsheet.".format(tabname))
+            return None
+
+        # Test if column exists:
+        if colname not in self._columnNames[tabname]:
+            print("[Warning] {} column does not exist in tab {}.".format(colname, tabname))
+            print(self._columnNames[tabname])
+            return None
+
+        colIndex = self._columnNames[tabname].index(colname)
+        print("column index = " + str(colIndex))
+
+        # Adding values to column:
+        for index, value in enumerate(data):
+            cell = xl_rowcol_to_cell(index + 4, colIndex)
+            self.writer_object.sheets[tabname].write(cell, value)
+
     def _prepare_dataframe(self, df):
-        
+
         # As part of the table preparation, the description field needs to be generated:
         def _generate_description(row):
             description = row['DESCRIPTION'] if isinstance(row['DESCRIPTION'], str) else ''
