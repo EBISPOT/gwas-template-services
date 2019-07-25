@@ -43,7 +43,7 @@ class Configuration():
 
         'accessionIDs' : {
             'removeColumn': {
-                'study': ['efo_trait','array_manufacturer', 'genotyping_technology', 'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description', 'trait'],
+                'study': ['efo_trait','array_manufacturer', 'genotyping_technology', 'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description'],
                 'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category', 'ancestry', 'ancestry_description', 'country_recruitement'],
                 'association': ['haplotype_id', 'beta', 'beta_unit', 'odds_ratio', 'ci_lower', 'ci_upper','standard_error','study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'effect_allele', 'other_allele', 'effect_allele_frequency']
             },

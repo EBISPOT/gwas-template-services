@@ -25,6 +25,41 @@ function saveBlob(blob, fileName) {
     a.dispatchEvent(new MouseEvent("click"));
 }
 
+// Function to retrieve study data from the GWAS Catalog REST API:
+function getStudies(pmid){
+
+
+    // Submit get request:
+    var xhr = new XMLHttpRequest();
+    var hostname=window.location.hostname;
+    xhr.open("POST", "v1/templates", true);
+    xhr.responseType = "blob";
+
+}
+
+
+function getStudies(pmid){
+    var URL = `https://www.ebi.ac.uk/gwas/rest/api/studies/search/findByPublicationIdPubmedId?pubmedId=${pmid}&size=1000`;
+    var result = null;
+    $.ajax({
+        url: URL,
+        type: 'get',
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+            result = data;
+        },
+        error: function(request){
+            console.log("[Error] Retrieving data from the REST API failed. URL: " + URL);
+            console.log(request.responseText)
+            result = [];
+        }
+    });
+    return result;
+}
+
+
+
 // Call API to generate template:
 function generateTemplate(){
     var parameters = parseForm();
