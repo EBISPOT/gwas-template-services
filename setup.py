@@ -19,5 +19,4 @@ setup(
     author='Daniel Suveges',
     author_email='dsuveges@ebi.ac.uk',
     description='Package to manage template related services for the data deposition system of the GWAS Catalog',
-    install_requires=['pandas==0.22.0', 'xlsxwriter==1.1.8', 'flask', 'gunicorn', 'eventlet', 'pytest-cov'],
 )
