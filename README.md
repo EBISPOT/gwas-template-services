@@ -4,74 +4,123 @@
 
 Application to provide template related services for the deposition interface
 
-## Installation
+**Requires Python 3.6+**
 
-1.   Install miniconda
-2.   Clone repo
+## Installation - using docker
 
-```bash
-cd ${APPROOT}
-git clone https://github.com/EBISPOT/gwas-template-services
-cd gwas-template-services
-```
+For information on docker see [Docker documentation](https://docs.docker.com/)
 
-2.   Create environment based on the environment file
+1. Clone repository:
+    ```bash
+    git clone https://github.com/EBISPOT/gwas-template-services.git
+    cd gwas-template-services
+    ```
 
-```bash
-ENVNAME=template_serv
-conda env create -f ${APPROOT}/gwas-template-services/environment.yml \
-    --prefix ${MINICONDA}/envs/${ENVNAME}
-```
+2. Build docker image:
+    ```bash
+    docker build -t template_services .
+    ```
+    Buildind an image named `template_services`
+    
+3. Run docker image:
 
-3.   Activate environment and install local packages
+    ```bash
+    mkdir docker_logs
+    docker run --detach \
+           -p 8649:8000 \
+           -v $(pwd)/docker_logs/:/application/logs \
+           template_services
+    ```
+    * Detaching the running container for the shell
+    * Mapping the exposed `8000` port to `8649` on the host
+    * Mounting the `docker_logs` folder so the containerised app can write logs on the host
+    * starting the `template_services` image
+     
+     When running the image, the application automatically started and is accessible on port `8649`
+    
+4. Test if application is running:
 
-```bash
-conda activate ${ENVNAME}
-pip install .
-```
+    ```bash
+    curl -X GET "http://localhost:8649/v1/template-schema" -H "accept: application/json"
+    ```
+    The expected out should be a JSON document listing the available schema versions:
+    ```JSON
+    {
+      "schema_versions": {
+        "1.0": {
+          "href": "http://localhost:8649//v1/template-schema/1.0"
+        }
+      }
+    }
+    ```
 
-The above command will also install the standalone version of the packages.
+## Installation - using conda
 
-4. Startup web application
+1. Clone repository:
+    ```bash
+    git clone https://github.com/EBISPOT/gwas-template-services.git
+    cd gwas-template-services
+    ```
+    
+2. Create conda environment:
 
-```bash
-gunicorn -b ${APPHOST}:${PORT} app:app
-```
+    ```bash
+    conda env create -f environment.yml
+    ```
+    
+3. Activate environment:
 
-## Using the stand-alone version
+    ```bash
+    conda activate template_serv
+    ```
+4. Install template service packates:
 
-```bash
-gwas-spreadsheet_builder --output test_output.xlsx \
-    --input note:schema_definitions/notes_schema.xlsx \
-        study:schema_definitions/study_schema.xlsx \
-        association:schema_definitions/association_schema.xlsx \
-        samples:schema_definitions/samples.
-```
+    ```bash
+    pip install .
+    ```
+5. Start the web application:
+
+    ```bash
+    gunicorn -b localhost:8080 app:app \
+        --log-level=debug \
+        --access-logfile=logs/access.log \
+        --error-logfile=logs/error.log
+    ```
 
 ## Endpoints
 
-### Download empty template sheet
+### `/v1/template-schema` (GET)
 
-`/templates` (GET)
+Endpoint to expose all available schema versions. Returns a JSON.  
 
-### Get a list of available schemas
+### `/v1/template-schema/{version}` (GET)
 
-`/schemas/` (GET)
+Endpoint to expose schema definition for a defined schema version. Returns a JSON.
 
-### Get JSON schema
+### `/v1/templates` (POST)
 
-`/schemas/{schema_name}` (GET)
+Endpoint to generate a template spreadsheet in excel. Retruns a blob.
 
-### Upload file for a submission
+### `/template_download_test`
 
-`/upload` (POST)
+It's a html page to demonstrate the behavior of the customizable template spread sheet generation.
 
 **Parameters:**
 
-* `templateFile`: file, required
-* `submissionId`: int, required
-* `fileName`: string, required
+* `curator` - Describing if a user is member of the curator group or not (optional, yes/no)
 
-### Trigger validation
+* `haplotype` - If the user is depositing haplotype based associations (optional, yes/no)
 
-`/validation?submissionId=<submissionId: int>&fileName=<fileName: str>` (GET)
+* `snpxsnp` - If the user is depositing SNP x SNP interaction based associations (optional, yes/no)
+
+* `effect` - How the effect of the association is expressed (Ooptional, R/beta)
+
+* `backgroundTrait` - If the study applied background traits (optional, yes/no)
+
+* `accessionIDs` - Array of strings optional. If submitted it is assumed that the user is depositing summary 
+stats for an existing publication. The provided accession IDs will be pre-filled into the template.
+ 
+
+## Using the stand-alone scripts
+
+Documentation comes later.
