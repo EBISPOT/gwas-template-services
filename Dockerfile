@@ -1,10 +1,10 @@
-FROM continuumio/miniconda3
+FROM continuumio/miniconda3:4.3.14
 
 # Updating conda:
 RUN conda update -n base -c defaults conda
 
 # Try building the environment:
-ADD environment.yml /tmp/environment.yml
+COPY environment.yml /tmp/environment.yml
 RUN conda env create -f /tmp/environment.yml
 RUN conda init bash
 RUN echo "source activate template_serv" > ~/.bashrc

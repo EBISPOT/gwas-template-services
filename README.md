@@ -20,7 +20,6 @@ For information on docker see [Docker documentation](https://docs.docker.com/)
     ```bash
     docker build -t template_services .
     ```
-    
     Buildind an image named `template_services`
     
 3. Run docker image:
@@ -37,16 +36,14 @@ For information on docker see [Docker documentation](https://docs.docker.com/)
     * Mounting the `docker_logs` folder so the containerised app can write logs on the host
     * starting the `template_services` image
      
-    When running the image, the application automatically started and is accessible on port `8649`
+     When running the image, the application automatically started and is accessible on port `8649`
     
 4. Test if application is running:
 
     ```bash
     curl -X GET "http://localhost:8649/v1/template-schema" -H "accept: application/json"
     ```
-    
     The expected out should be a JSON document listing the available schema versions:
-
     ```JSON
     {
       "schema_versions": {
@@ -111,12 +108,18 @@ It's a html page to demonstrate the behavior of the customizable template spread
 **Parameters:**
 
 * `curator` - Describing if a user is member of the curator group or not (optional, yes/no)
+
 * `haplotype` - If the user is depositing haplotype based associations (optional, yes/no)
+
 * `snpxsnp` - If the user is depositing SNP x SNP interaction based associations (optional, yes/no)
+
 * `effect` - How the effect of the association is expressed (Ooptional, R/beta)
+
 * `backgroundTrait` - If the study applied background traits (optional, yes/no)
+
 * `accessionIDs` - Array of strings optional. If submitted it is assumed that the user is depositing summary 
-stats for an existing publication. The provided accession IDs will be pre-filled into the template. 
+stats for an existing publication. The provided accession IDs will be pre-filled into the template.
+ 
 
 ## Using the stand-alone scripts
 
