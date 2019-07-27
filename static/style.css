@@ -7,4 +7,8 @@
   margin-bottom: 15px;
 }
 
+#summaryStatsForm {
+  display: none;
+}
+
 .alert.warning {background-color: #ff9800;}

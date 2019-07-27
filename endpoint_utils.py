@@ -1,7 +1,27 @@
-
-
 # Import custom functions:
 from config.properties import Configuration as conf
+
+def parse_prefilled_study_data(inputString):
+    """
+    This function parses the input string given to the template endpoint as studyData
+    Checks a few things then returns a dataframe.
+
+    :param inputString:
+    :type JSON string
+    :return: pandas dataframe
+    """
+
+    # Try to parse the data as JSON
+
+    # If it goes alright, test if it is an array
+
+
+    # If it is an array, test if values are dictionaries.
+
+
+    # If it's values are dictionaries, read as pandas dataframe
+
+
 
 
 def filter_parser(filterParameters, tabname, schemaDf):

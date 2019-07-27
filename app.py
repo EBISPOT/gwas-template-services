@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, send_file, make_response
 from flask_restplus import Resource, Api
 from flask_cors import CORS, cross_origin
 import sys
+import json
 
 # Import logging related functions:
 # from logging.config import dictConfig
@@ -32,7 +33,7 @@ templateParams.add_argument('haplotype', type=str, required=False, help='If the 
 templateParams.add_argument('snpxsnp', type=str, required=False, help='If the associations are SNP x SNP interactions or not.')
 templateParams.add_argument('effect', type=str, required=False, help='How the effect is expressed.')
 templateParams.add_argument('backgroundTrait', type=str, required=False, help='If backgroundtrait is present or not.')
-templateParams.add_argument('accessionIDs', type=str, required=False, help='To generate summary stat sheet post all accession IDs.', action='append')
+templateParams.add_argument('studyData', type=str, required=False, help='To generate summary stat sheet post study data.', action='append')
 
 
 # REST endpoint for providing the template spreadsheets:
@@ -53,10 +54,12 @@ class templateGenerator(Resource):
         if 'effect' in args: filterParameters['effect'] = args['effect']
 
         # Parsing accession IDs is a bit complex:
-        filterParameters['accessionIDs'] = []
-        if 'accessionIDs' in args and args['accessionIDs']:
-            for accessionID in args['accessionIDs']:
-                filterParameters['accessionIDs'] += accessionID.split(',')
+        filterParameters['studyData'] = []
+        if 'studyData' in args and args['studyData']:
+            for accessionID in args['studyData']:
+                filterParameters['studyData'] += json.loads(accessionID)
+
+            print('[Info] Number of studies: {}'.format(len(filterParameters['studyData'])))
 
         # Reading all schema files into a single ordered dictionary:
         schemaVersion = Configuration.schemaVersion
@@ -78,8 +81,8 @@ class templateGenerator(Resource):
                 spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
 
         # Adding data:
-        if filterParameters['accessionIDs']:
-            print(filterParameters['accessionIDs'])
+        if filterParameters['studyData']:
+            print(filterParameters['studyData'])
             spreadsheet_builder.add_values(tabname='study', colname='study_accession', data=filterParameters['accessionIDs'])
 
         # Once all spreadsheets added to the template, saving document:
