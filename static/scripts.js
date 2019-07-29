@@ -44,7 +44,8 @@ Input: PMID
 Output: Array of study documents
  */
 function getStudies(pmid){
-    var URL = `https://www.ebi.ac.uk/gwas/rest/api/studies/search/findByPublicationIdPubmedId?pubmedId=${pmid}&size=1000`;
+    var REST_URL = `http://${location.host}:8080/gwas/rest/api`;
+    var URL = `${REST_URL}/studies/search/findByPublicationIdPubmedId?pubmedId=${pmid}&size=1000`;
     var result = null;
     $.ajax({
         url: URL,
