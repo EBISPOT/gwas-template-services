@@ -81,7 +81,7 @@ class templateGenerator(Resource):
         for schema in schemaDataFrames.keys():
 
             # Set default columns:
-            filteredSchemaDataFrame = eu.filter_parser(filterParameters, schema, schemaDataFrames[schema])
+            filteredSchemaDataFrame = eu.schema_parser(filterParameters, Configuration.filters, schema, schemaDataFrames[schema])
 
             # Add spreadsheet if at least one column remained:
             if len(filteredSchemaDataFrame):
@@ -113,7 +113,7 @@ class SchemaList(Resource):
         supported_versions = sv.get_versions()
 
         # Initialize return data:
-        returnData = {"schema_versions":{}}
+        returnData = {"current_schema" : Configuration.schemaVersion, "schema_versions":{}}
 
         for version in supported_versions:
             returnData["schema_versions"][version] = { 'href': '{}/v1/template-schema/{}'.format(request.url_root, version) }

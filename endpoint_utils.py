@@ -37,7 +37,7 @@ def preFillDataParser(inputString):
     # Output data is a dictionary with pandas dataframes:
     outputDataDict = {}
 
-    # If it is an dictionary, test if values are lists of dictionaries:
+    # If it is a dictionary, test if values are lists of dictionaries:
     for sheetName, values in inputData.items():
         if not isinstance(values, list):
             return "[Error] Pre-fill data should be an array of dictionaries"
@@ -56,19 +56,7 @@ def preFillDataParser(inputString):
     return outputDataDict
 
 
-# Test cases:
-# d = {
-#     "curator": "false",
-#     "haplotype": "false",
-#     "effect": "beta",
-#     "backgroundTrait": "false",
-#     "studyData": '''{"association":[{"test1" : "value1"},{"test1" : "value2"},{"test1" : "value3"}], "study":[{"accessionID":"GCST004600","diseaseTrait":"Eosinophil percentage of white cells","initialSampleSize":"172,378 European ancestry individuals"},{"accessionID":"GCST004602","diseaseTrait":"Mean corpuscular volume","initialSampleSize":"172,433 European ancestry individuals"}]}'''
-# }
-# print(parse_prefilled_study_data('["cica" : 12]'))
-# print(parse_prefilled_study_data('{"cica" : 12}'))
-# print(parse_prefilled_study_data('[{"cica" : 12}, "pocok"]'))
-
-def filter_parser(filterParameters, tabname, schemaDf):
+def schema_parser(filterParameters, filters, tabname, schemaDf):
     """
     This function filters out the schema definition based on the provided parameters.
     Only the default columns are visible: the list of default columns can be changed by the provided parameters.
@@ -88,9 +76,14 @@ def filter_parser(filterParameters, tabname, schemaDf):
 
     # TODO: test data types... sometime in the future
 
+    # Test if
+
     # Generate compound parameters:
-    if filterParameters['curator'] and filterParameters['backgroundTrait']:
-        filterParameters['curator_backgroundTrait'] = True
+    try:
+        if filterParameters['curator'] and filterParameters['backgroundTrait']:
+            filterParameters['curator_backgroundTrait'] = True
+    except KeyError:
+        pass
 
     # Filtering based on the provided parameters:
     for criteria, value in filterParameters.items():
@@ -100,17 +93,17 @@ def filter_parser(filterParameters, tabname, schemaDf):
         if criteria == 'effect':
             criteria = value
 
-        if criteria not in conf.filters: continue  # We won't let undocumented filters breaking the code.
+        if criteria not in filters: continue  # We won't let undocumented filters breaking the code.
 
         # Adding columns as defined by the properties file:
-        if 'addColumn' in conf.filters[criteria] and tabname in conf.filters[criteria]['addColumn']:
-            for field in conf.filters[criteria]['addColumn'][tabname]:
+        if 'addColumn' in filters[criteria] and tabname in filters[criteria]['addColumn']:
+            for field in filters[criteria]['addColumn'][tabname]:
                 print('Adding {} for {}'.format(field, tabname))
                 schemaDf.loc[schemaDf.NAME == field, 'DEFAULT'] = True
 
         # removing columns as defined by the properties file:
-        if 'removeColumn' in conf.filters[criteria] and tabname in conf.filters[criteria]['removeColumn']:
-            for field in conf.filters[criteria]['removeColumn'][tabname]:
+        if 'removeColumn' in filters[criteria] and tabname in filters[criteria]['removeColumn']:
+            for field in filters[criteria]['removeColumn'][tabname]:
                 schemaDf.loc[schemaDf.NAME == field, 'DEFAULT'] = False
 
     # Filter dataframe:
