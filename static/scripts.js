@@ -1,7 +1,7 @@
 /*
 The parsed study data is a global variable, that might or might not be overwritten later
  */
-var parsedStudyData = [];
+var parsedStudyData = {};
 
 
 // Function to parse radio buttons:
@@ -14,9 +14,16 @@ function parseForm() {
         parameters.append(field, radioValue);
     }
 
+    // Check if the summary stats checkbox is ticked:
+    if ($('input[id=summaryStats]').is(':checked')){
+        parameters.append('summaryStats', 'true');
+    };
+
     // Check if user uploads summary stats and the parsed study data is filled:
-    if ( parsedStudyData.length > 0 ){
-        parameters.append("studyData", JSON.stringify(parsedStudyData));
+    console.log("** Stuff: " + parsedStudyData);
+    if ( Object.keys(parsedStudyData).length > 0 ){
+        console.log("** Stuff: " + parsedStudyData);
+        parameters.append("prefillData", JSON.stringify(parsedStudyData));
     }
 
     return(parameters);
@@ -73,14 +80,14 @@ Each returned study document looks like this:
 }
  */
 function parseStudyData(studyData){
-    var parsedStudyData = [];
+    var parsedStudyData = {"study" : []};
 
     // Loop through all studyes:
     for ( var study of studyData ){
-        parsedStudyData.push({
-            "accessionID" : study.accessionId,
-            "diseaseTrait" : study.diseaseTrait.trait,
-            "initialSampleSize" : study.initialSampleSize
+        parsedStudyData.study.push({
+            "study_accession" : study.accessionId,
+            "trait" : study.diseaseTrait.trait,
+            "sample_description" : study.initialSampleSize
         });
     };
 
@@ -98,7 +105,7 @@ function getFormData(formData){
 
 // Call API to generate template:
 $('button[id=generate]').click(function generateTemplate(){
-     parameters = parseForm();
+    parameters = parseForm();
 
     // Submit POST request:
     var xhr = new XMLHttpRequest();

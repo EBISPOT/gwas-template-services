@@ -33,7 +33,10 @@ templateParams.add_argument('haplotype', type=str, required=False, help='If the 
 templateParams.add_argument('snpxsnp', type=str, required=False, help='If the associations are SNP x SNP interactions or not.')
 templateParams.add_argument('effect', type=str, required=False, help='How the effect is expressed.')
 templateParams.add_argument('backgroundTrait', type=str, required=False, help='If backgroundtrait is present or not.')
-templateParams.add_argument('studyData', type=str, required=False, help='To generate summary stat sheet post study data.', action='append')
+templateParams.add_argument('summaryStats', type=str, required=False, help='If the user wants to submit summary stats or not.')
+
+# Pre-fill data is submitted as string that will be parsed as JSON:
+templateParams.add_argument('prefillData', type=str, required=False, help='Contain data to pre-fill templates.')
 
 
 # REST endpoint for providing the template spreadsheets:
@@ -52,21 +55,25 @@ class templateGenerator(Resource):
         if 'snpxsnp' in args: filterParameters['snpxsnp'] = True if args['snpxsnp'] == "true" else False
         if 'backgroundTrait' in args: filterParameters['backgroundTrait'] = True if args['backgroundTrait'] == "true" else False
         if 'effect' in args: filterParameters['effect'] = args['effect']
+        if 'summaryStats' in args: filterParameters['summaryStats'] = True if args['summaryStats'] == "true" else False
 
-        # Parsing accession IDs is a bit complex:
-        filterParameters['studyData'] = []
-        if 'studyData' in args and args['studyData']:
-            for accessionID in args['studyData']:
-                filterParameters['studyData'] += json.loads(accessionID)
+        # Parse pre-fill data if present:
+        if args.prefillData is not None:
+            prefillData = eu.preFillDataParser(args.prefillData)
+        else:
+            prefillData = {}
 
-            print('[Info] Number of studies: {}'.format(len(filterParameters['studyData'])))
+        # If the returned data is not a dictionary, the function needs to fail:
+        if not isinstance(prefillData, dict):
+            print( {"Error" : "parsing pre-fill data failed."})
 
         # Reading all schema files into a single ordered dictionary:
         schemaVersion = Configuration.schemaVersion
         sv = schemaLoader()
         schemaDataFrames = sv.read_schema(schemaVersion)
 
-        print(filterParameters)
+        # Print report:
+        print('[Info] Filter paramters: {}'.format(filterParameters.__str__()))
 
         # Initialize spreadsheet builder object:
         spreadsheet_builder = SpreadsheetBuilder(version=schemaVersion)
@@ -80,12 +87,11 @@ class templateGenerator(Resource):
             if len(filteredSchemaDataFrame):
                 spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
 
-        # Adding data:
-        if filterParameters['studyData']:
-            print(filterParameters['studyData'])
-            spreadsheet_builder.add_values(tabname='study', colname='study_accession', data=filterParameters['accessionIDs'])
+            # Adding pre-fill data:
+            if schema in prefillData:
+                spreadsheet_builder.add_values(tabname=schema, preFillDataFrame=prefillData[schema])
 
-        # Once all spreadsheets added to the template, saving document:
+        # Once all spreadsheets added to the template, and pre filled data is added, we are saving document:
         x = spreadsheet_builder.save_workbook()
         x.seek(0)
 

@@ -1,28 +1,72 @@
+import json
+import pandas as pd
+
 # Import custom functions:
 from config.properties import Configuration as conf
 
-def parse_prefilled_study_data(inputString):
+
+def preFillDataParser(inputString):
     """
-    This function parses the input string given to the template endpoint as studyData
-    Checks a few things then returns a dataframe.
+    This function parses the input string given to the template generator.
+    Checks a few things then returns a dictionary of dataframes.
+
+    {
+        sheetName1 : [
+            {columnName : value1},
+            {columnName : value2},
+            {columnName : value3},
+            {columnName : value4},
+        ]
+    }
 
     :param inputString:
     :type JSON string
     :return: pandas dataframe
     """
 
-    # Try to parse the data as JSON
+    # Try to parse the data as JSON:
+    try:
+        inputData = json.loads(inputString)
+    except TypeError:
+        return "[Error] Pre-fill data cannot be read as JSON."
 
-    # If it goes alright, test if it is an array
+    # If it goes alright, test if it is a dictionary:
+    if not isinstance(inputData, dict):
+        return "[Error] Pre-fill data should be an dictionary of lists."
+
+    # Output data is a dictionary with pandas dataframes:
+    outputDataDict = {}
+
+    # If it is an dictionary, test if values are lists of dictionaries:
+    for sheetName, values in inputData.items():
+        if not isinstance(values, list):
+            return "[Error] Pre-fill data should be an array of dictionaries"
+
+        for value in values:
+            if not isinstance(value, dict):
+                return "[Error] Pre-fill data should be an array of dictionaries"
+
+        # If it's values are dictionaries, read as pandas dataframe
+        try:
+            outputDataDict[sheetName] = pd.DataFrame(values)
+        except TypeError:
+            return "[Error] Study data could not be imported as "
+
+    # Return data:
+    return outputDataDict
 
 
-    # If it is an array, test if values are dictionaries.
-
-
-    # If it's values are dictionaries, read as pandas dataframe
-
-
-
+# Test cases:
+# d = {
+#     "curator": "false",
+#     "haplotype": "false",
+#     "effect": "beta",
+#     "backgroundTrait": "false",
+#     "studyData": '''{"association":[{"test1" : "value1"},{"test1" : "value2"},{"test1" : "value3"}], "study":[{"accessionID":"GCST004600","diseaseTrait":"Eosinophil percentage of white cells","initialSampleSize":"172,378 European ancestry individuals"},{"accessionID":"GCST004602","diseaseTrait":"Mean corpuscular volume","initialSampleSize":"172,433 European ancestry individuals"}]}'''
+# }
+# print(parse_prefilled_study_data('["cica" : 12]'))
+# print(parse_prefilled_study_data('{"cica" : 12}'))
+# print(parse_prefilled_study_data('[{"cica" : 12}, "pocok"]'))
 
 def filter_parser(filterParameters, tabname, schemaDf):
     """
@@ -70,14 +114,14 @@ def filter_parser(filterParameters, tabname, schemaDf):
                 schemaDf.loc[schemaDf.NAME == field, 'DEFAULT'] = False
 
     # Filter dataframe:
-    schemaDf = schemaDf.loc[schemaDf.DEFAULT]
+    try:
+        schemaDf = schemaDf.loc[schemaDf.DEFAULT]
+    except:
+        print(tabname)
 
     # Resetting index:
     schemaDf = schemaDf.reset_index(drop=True)
     return(schemaDf)
-
-def pre_fill_sheet(spreadsheetDf, colname, values):
-    return 1
 
 
 def set_log_path(conf):

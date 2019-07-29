@@ -106,7 +106,7 @@ class SpreadsheetBuilder:
         self.workbook.close()
         return self.output_file
 
-    def add_values(self, tabname, colname, data):
+    def add_values(self, tabname, preFillDataFrame):
         """
         This function adds data to a given column of a given sheet
 
@@ -115,25 +115,44 @@ class SpreadsheetBuilder:
         :param data:
         :return:
         """
+        print('We are here!!!')
 
         # Test if tab exists:
         if tabname not in self.writer_object.sheets:
             print("[Warning] {} tab does not exist in spreadsheet.".format(tabname))
             return None
 
-        # Test if column exists:
-        if colname not in self._columnNames[tabname]:
-            print("[Warning] {} column does not exist in tab {}.".format(colname, tabname))
-            print(self._columnNames[tabname])
-            return None
+        # Excluding all columns of the dataframe which is not in the sheet:
+        preFillDataFrame = preFillDataFrame[[x for x in preFillDataFrame.columns if x in self._columnNames[tabname]]]
+        if len(preFillDataFrame.columns) == 0: return None
 
-        colIndex = self._columnNames[tabname].index(colname)
-        print("column index = " + str(colIndex))
+        # Get column index for all columns:
+        colIndexes = {}
+        for columnName in preFillDataFrame.columns:
+            colIndexes[columnName] = self._columnNames[tabname].index(columnName)
 
-        # Adding values to column:
-        for index, value in enumerate(data):
-            cell = xl_rowcol_to_cell(index + 4, colIndex)
-            self.writer_object.sheets[tabname].write(cell, value)
+        # Adding index as a column:
+        preFillDataFrame.loc[preFillDataFrame.index, 'rowIndex'] = preFillDataFrame.index
+        print(preFillDataFrame.head())
+
+        # A private function is applied on all rows of the prefill dataframe:
+        def __add_prefill_data(row):
+
+            # Loop-through all columns:
+            for columnName, value in row.items():
+                # Skipping rowIndex:
+                if columnName == 'rowIndex': continue
+
+                # Get column index:
+                colIndex = colIndexes[columnName]
+
+                # Update value in dataframe:
+                cell = xl_rowcol_to_cell(row['rowIndex'] + 4, colIndex)
+                self.writer_object.sheets[tabname].write(cell, value)
+
+                print('Adding: {} -> {}'.format(cell, value))
+
+        preFillDataFrame.apply(__add_prefill_data, axis = 1)
 
     def _prepare_dataframe(self, df):
 
