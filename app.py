@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, send_file, make_response
 from flask_restplus import Resource, Api
 from flask_cors import CORS, cross_origin
 import sys
-import json
 
 # Import logging related functions:
 # from logging.config import dictConfig

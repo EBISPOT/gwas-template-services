@@ -1,9 +1,6 @@
 import json
 import pandas as pd
 
-# Import custom functions:
-from config.properties import Configuration as conf
-
 
 def preFillDataParser(inputString):
     """

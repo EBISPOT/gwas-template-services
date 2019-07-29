@@ -15,14 +15,12 @@ function parseForm() {
     }
 
     // Check if the summary stats checkbox is ticked:
-    if ($('input[id=summaryStats]').is(':checked')){
-        parameters.append('summaryStats', 'true');
+    if ($("input[id=summaryStats]").is(":checked")){
+        parameters.append("summaryStats", "true");
     };
 
     // Check if user uploads summary stats and the parsed study data is filled:
-    console.log("** Stuff: " + parsedStudyData);
     if ( Object.keys(parsedStudyData).length > 0 ){
-        console.log("** Stuff: " + parsedStudyData);
         parameters.append("prefillData", JSON.stringify(parsedStudyData));
     }
 
@@ -49,16 +47,14 @@ function getStudies(pmid){
     var result = null;
     $.ajax({
         url: URL,
-        type: 'get',
-        dataType: 'json',
+        type: "get",
+        dataType: "json",
         async: false,
         success: function(data) {
             $( "#publicationRecord" ).append( `<p>[Info] Retrieving data from the GWAS Catalog REST API was successful.</p>` );
             result = data;
         },
         error: function(request){
-            console.log("[Error] Retrieving data from the REST API failed. URL: " + URL);
-            console.log(request.responseText)
             result = [];
         }
     }).fail(function( jqXHR, textStatus ) {
@@ -99,7 +95,7 @@ function parseStudyData(studyData){
     };
 
     return parsedStudyData;
-};
+}
 
 // Parse form data
 function getFormData(formData){
@@ -111,8 +107,8 @@ function getFormData(formData){
 }
 
 // Call API to generate template:
-$('button[id=generate]').click(function generateTemplate(){
-    parameters = parseForm();
+$("button[id=generate]").click(function generateTemplate(){
+    var parameters = parseForm();
 
     // Show report box:
     $("#requestBody").show();
@@ -124,8 +120,8 @@ $('button[id=generate]').click(function generateTemplate(){
     xhr.responseType = "blob";
 
     // Printing out request body:
-    var requestString = JSON.stringify(getFormData(parameters), undefined, 4);
-    requestString = requestString.replace(/\\/g, '');
+    var requestString = JSON.stringify(getFormData(parameters), null, 4);
+    requestString = requestString.replace(/\\/g, "");
 
     $( "#requestBody" ).empty();
     $( "#requestBody" ).append( `<p>[Info] This is the request body sent to the template generator endpoint:<br>${requestString}</p>` );
@@ -145,8 +141,8 @@ $('button[id=generate]').click(function generateTemplate(){
 
 
 // If the summary stats checkbox is ticked, we show the pubmed ID form:
-$('input[id=summaryStats]').change(function(){
-    if($(this).is(':checked')) {
+$("input[id=summaryStats]").change(function(){
+    if($(this).is(":checked")) {
         // Show option add pmid:
         $("#summaryStatsForm").show();
     }
@@ -154,21 +150,19 @@ $('input[id=summaryStats]').change(function(){
 
 
 // A function to retrieve the pubmed ID from the REST API:
-$('button[id=pmidTest]').click(function(){
+$("button[id=pmidTest]").click(function(){
 
     // Show report box:
     $("#publicationRecord").show();
 
     // Get pubmedID:
     var pubmedID = document.getElementById("PubmedID").value;
-    console.log("** parsed ID: " + pubmedID);
 
     // Retrieve data from the REST API:
     var studies = getStudies(pubmedID);
 
     // Filter REST response:
     studies = studies._embedded.studies;
-    console.log(studies);
 
     // Extract meta-data:
     var title = studies[0].publicationInfo.title;
@@ -181,10 +175,9 @@ $('button[id=pmidTest]').click(function(){
 
         // Parsing study data:
         parsedStudyData = parseStudyData(studies);
-        console.log(parsedStudyData);
     }
     else {
         $( "#publicationRecord" ).append( `[Info] Retrieving data from the GWAS Catalog REST API was successful.` );
-        return
+        return;
     }
 });

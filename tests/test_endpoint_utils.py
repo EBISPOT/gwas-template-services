@@ -4,10 +4,7 @@ import os
 import json
 import pandas as pd
 
-
 from config.properties import Configuration
-from schema_definitions.schemaLoader import schemaLoader
-
 
 # Adding app folder to Python path:
 appFolder = os.path.dirname(os.path.realpath(__file__))
@@ -31,7 +28,7 @@ class TestEndpointUtils(unittest.TestCase):
 
     def test_preFillDataParser(self):
 
-        failInput1 = 'This string is not JSON serializable' # Not JSON serializable object
+        # failInput1 = 'This string is not JSON serializable' # Not JSON serializable object
         failInput2 = '[12, "Test"]' # JSON serializable, but not properly formatted object
         failInput3 = '{"foo" : 12 }' # dictionary, but values are not lists
         failInput4 = '{"foo" : [12, 3, "bar"]}' # Dictionary with list, but list elements are not dictionaries
@@ -76,7 +73,7 @@ class TestEndpointUtils(unittest.TestCase):
         self.assertIsInstance(output[testKey], pd.DataFrame)
 
         # Test if the returned dataframe is exactly what we are expecting:
-        testDataFrame = pd.DataFrame(goodInput[testKey])
+        # testDataFrame = pd.DataFrame(goodInput[testKey])
         # self.assertEqual(output[testKey], testDataFrame)
 
     def test_schema_parser(self):
