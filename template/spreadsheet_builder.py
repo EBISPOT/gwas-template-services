@@ -33,7 +33,7 @@ class SpreadsheetBuilder:
             output_file = io.BytesIO()
 
         self.output_file = output_file
-        
+
         # Define workbook object:
         self.writer_object = pd.ExcelWriter(output_file, engine ='xlsxwriter')
         self.workbook = self.writer_object.book
@@ -115,7 +115,6 @@ class SpreadsheetBuilder:
         :param data:
         :return:
         """
-        print('We are here!!!')
 
         # Test if tab exists:
         if tabname not in self.writer_object.sheets:
@@ -133,7 +132,6 @@ class SpreadsheetBuilder:
 
         # Adding index as a column:
         preFillDataFrame.loc[preFillDataFrame.index, 'rowIndex'] = preFillDataFrame.index
-        print(preFillDataFrame.head())
 
         # A private function is applied on all rows of the prefill dataframe:
         def __add_prefill_data(row):
@@ -149,8 +147,6 @@ class SpreadsheetBuilder:
                 # Update value in dataframe:
                 cell = xl_rowcol_to_cell(row['rowIndex'] + 4, colIndex)
                 self.writer_object.sheets[tabname].write(cell, value)
-
-                print('Adding: {} -> {}'.format(cell, value))
 
         preFillDataFrame.apply(__add_prefill_data, axis = 1)
 

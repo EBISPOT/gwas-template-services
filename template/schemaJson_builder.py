@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from argparse import ArgumentParser
 import pandas as pd
 import json
@@ -57,7 +56,7 @@ class jsonSchemaBuilder:
     def saveJson(self, fileName = None):
         if not fileName:
             fileName = '{}_schema.json'.format(self.schemaType)
-            
+
         # Save file:
         with open(fileName, 'w') as outfile:
             json.dump(self.schema, outfile, indent=4)

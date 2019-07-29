@@ -50,18 +50,16 @@ function getStudies(pmid){
         type: "get",
         dataType: "json",
         async: false,
-        success: function(data) {
+    })
+    .done(function(data) {
             $( "#publicationRecord" ).append( `<p>[Info] Retrieving data from the GWAS Catalog REST API was successful.</p>` );
-            result = data;
-        },
-        error: function(request){
-            result = [];
-        }
-    }).fail(function( jqXHR, textStatus ) {
+            result = data;})
+    .fail(function( jqXHR, textStatus ) {
         $( "#publicationRecord" ).append( `<p>[Error] Retrieving data from the GWAS Catalog REST API failed. Reason: ${textStatus}</p>` );
         $( "#publicationRecord" ).append( `<p>[Warning] Reading study data from local file...</p>` );
 
         // Load study data from JSON file:
+        var data = getStaticData();
         result = JSON.parse(data);
      });
 

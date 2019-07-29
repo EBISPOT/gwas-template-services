@@ -104,10 +104,7 @@ def schema_parser(filterParameters, filters, tabname, schemaDf):
                 schemaDf.loc[schemaDf.NAME == field, 'DEFAULT'] = False
 
     # Filter dataframe:
-    try:
-        schemaDf = schemaDf.loc[schemaDf.DEFAULT]
-    except:
-        print(tabname)
+    schemaDf = schemaDf.loc[schemaDf.DEFAULT]
 
     # Resetting index:
     schemaDf = schemaDf.reset_index(drop=True)
