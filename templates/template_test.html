@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="static/style.css">
     <script src="http://pure.github.io/pure/libs/pure.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="static/studies_2.json"></script>
 
 </head>
 <body>
@@ -47,16 +48,20 @@
             <label for="backgroundTrait">Are background traits recorded?</label>
             <input type="radio" name="backgroundTrait" value="true">Yes
             <input type="radio" name="backgroundTrait" value="false" checked>No<br>
-
-            <p style="padding-top: 5px; padding-bottom: 2px">If user provides study accessions as a comma separated list to upload summary statistics,
-                </br>a corresponding template sheet is generated with pre-filled accession IDs.</p>
-            <input type="checkbox" id="summaryStats" >I want to submit summary stats for an existsing publication.<br>
-            List of study accessions: <input type="text" id="accessionIDs" name="accessions" value="GCST007280, GCST007285, GCST007286" size="100"><br>
         </form>
+    </div>
+    <p style="padding-top: 5px; padding-bottom: 2px">When depositing summary stats for already curated publications a special type of template is generated.</p>
+    <input type="checkbox" id="summaryStats" >I want to submit summary stats for an existsing publication.<br>
+    <div id="summaryStatsForm">
+        <p ID="pubmedIDquery">Please provide a pubmed ID: <input type="text" id="PubmedID" name="accessions" value="27863252" size="20"><button id="pmidTest">Check pubmed ID</button></p><br>
+        <div class="reportBox" id="publicationRecord"></div>
     </div>
     </br>
     <div>
         <button id="generate">Generate template</button>
+    </div>
+    <div class="reportBox" id="requestBody">
+
     </div>
 </div>
 

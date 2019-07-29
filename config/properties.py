@@ -41,20 +41,20 @@ class Configuration():
             }
         },
 
-        'accessionIDs' : {
+        'summaryStats' : {
             'removeColumn': {
                 'study': ['efo_trait','array_manufacturer', 'genotyping_technology', 'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description'],
                 'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category', 'ancestry', 'ancestry_description', 'country_recruitement'],
                 'association': ['haplotype_id', 'beta', 'beta_unit', 'odds_ratio', 'ci_lower', 'ci_upper','standard_error','study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'effect_allele', 'other_allele', 'effect_allele_frequency']
             },
             'addColumn': {
-                'study': ['study_accession']
+                'study': ['study_accession', 'sample_description','cohort', 'cohort_id']
             }
         }
     }
 
     # Schema version:
-    schemaVersion = "1.0"
+    schemaVersion = "1.1"
 
     # Data line separator:
     triggerRow = "Add your data below this line"

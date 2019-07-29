@@ -101,24 +101,19 @@ Endpoint to expose schema definition for a defined schema version. Returns a JSO
 
 Endpoint to generate a template spreadsheet in excel. Retruns a blob.
 
-### `/template_download_test`
-
-It's a html page to demonstrate the behavior of the customizable template spread sheet generation.
-
 **Parameters:**
 
 * `curator` - Describing if a user is member of the curator group or not (optional, yes/no)
-
 * `haplotype` - If the user is depositing haplotype based associations (optional, yes/no)
-
 * `snpxsnp` - If the user is depositing SNP x SNP interaction based associations (optional, yes/no)
-
 * `effect` - How the effect of the association is expressed (Ooptional, R/beta)
-
 * `backgroundTrait` - If the study applied background traits (optional, yes/no)
-
 * `accessionIDs` - Array of strings optional. If submitted it is assumed that the user is depositing summary 
 stats for an existing publication. The provided accession IDs will be pre-filled into the template.
+
+### `/template_download_test`
+
+It's a html page to demonstrate the behavior of the customizable template spread sheet generation.
  
 
 ## Using the stand-alone scripts
