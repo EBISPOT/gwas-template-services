@@ -52,7 +52,8 @@ function getStudies(pmid){
         dataType: 'json',
         async: false,
         success: function(data) {
-            result = data._embedded.studies;
+            $( "#publicationRecord" ).append( `<pre>[Info] Retrieving data from the GWAS Catalog REST API was successful.</pre>` );
+            result = data;
         },
         error: function(request){
             console.log("[Error] Retrieving data from the REST API failed. URL: " + URL);
@@ -60,8 +61,13 @@ function getStudies(pmid){
             result = [];
         }
     }).fail(function( jqXHR, textStatus ) {
-    $( "#publicationRecord" ).append( `[Error] Retrieving data from the GWAS Catalog REST API failed. Reason: ${textStatus}` );
- });
+        $( "#publicationRecord" ).append( `<pre>[Error] Retrieving data from the GWAS Catalog REST API failed. Reason: ${textStatus}</pre>` );
+        $( "#publicationRecord" ).append( `<pre>[Warning] Reading study data from local file...</pre>` );
+
+        // Load study data from JSON file:
+        result = JSON.parse(data);
+     });
+
     return result;
 }
 
@@ -151,11 +157,11 @@ $('button[id=pmidTest]').click(function(){
     console.log("** parsed ID: " + pubmedID);
 
     // Retrieve data from the REST API:
-    // var studies = getStudies(pubmedID);
+    var studies = getStudies(pubmedID);
 
-    // Load study data from JSON file:
-    var studies = JSON.parse(data);
+    // Filter REST response:
     studies = studies._embedded.studies;
+    console.log(studies);
 
     // Extract meta-data:
     var title = studies[0].publicationInfo.title;
@@ -163,9 +169,8 @@ $('button[id=pmidTest]').click(function(){
 
     // Write report:
     if ( studies.length > 0){
-        $( "#publicationRecord" ).append( `<p>[Info] Retrieving data from the GWAS Catalog REST API was successful.</p>` );
-        $( "#publicationRecord" ).append( `<p>[Info] Publication title: ${title}.</p>` );
-        $( "#publicationRecord" ).append( `<p>[Info] Number of studies: ${studyCount}</p>`);
+        $( "#publicationRecord" ).append( `<pre>[Info] Publication title: ${title}.</pre>` );
+        $( "#publicationRecord" ).append( `<pre>[Info] Number of studies: ${studyCount}</pre>`);
 
         // Parsing study data:
         parsedStudyData = parseStudyData(studies);
