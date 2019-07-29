@@ -53,7 +53,7 @@ function getStudies(pmid){
         dataType: 'json',
         async: false,
         success: function(data) {
-            $( "#publicationRecord" ).append( `<pre>[Info] Retrieving data from the GWAS Catalog REST API was successful.</pre>` );
+            $( "#publicationRecord" ).append( `<p>[Info] Retrieving data from the GWAS Catalog REST API was successful.</p>` );
             result = data;
         },
         error: function(request){
@@ -62,8 +62,8 @@ function getStudies(pmid){
             result = [];
         }
     }).fail(function( jqXHR, textStatus ) {
-        $( "#publicationRecord" ).append( `<pre>[Error] Retrieving data from the GWAS Catalog REST API failed. Reason: ${textStatus}</pre>` );
-        $( "#publicationRecord" ).append( `<pre>[Warning] Reading study data from local file...</pre>` );
+        $( "#publicationRecord" ).append( `<p>[Error] Retrieving data from the GWAS Catalog REST API failed. Reason: ${textStatus}</p>` );
+        $( "#publicationRecord" ).append( `<p>[Warning] Reading study data from local file...</p>` );
 
         // Load study data from JSON file:
         result = JSON.parse(data);
@@ -114,6 +114,9 @@ function getFormData(formData){
 $('button[id=generate]').click(function generateTemplate(){
     parameters = parseForm();
 
+    // Show report box:
+    $("#requestBody").show();
+
     // Submit POST request:
     var xhr = new XMLHttpRequest();
     var hostname=window.location.hostname;
@@ -125,7 +128,7 @@ $('button[id=generate]').click(function generateTemplate(){
     requestString = requestString.replace(/\\/g, '');
 
     $( "#requestBody" ).empty();
-    $( "#requestBody" ).append( `<pre>[Info] This is the request body sent to the template generator endpoint:<br>${requestString}</pre>` );
+    $( "#requestBody" ).append( `<p>[Info] This is the request body sent to the template generator endpoint:<br>${requestString}</p>` );
 
     xhr.send(parameters);
     xhr.onload = function() {
@@ -153,6 +156,9 @@ $('input[id=summaryStats]').change(function(){
 // A function to retrieve the pubmed ID from the REST API:
 $('button[id=pmidTest]').click(function(){
 
+    // Show report box:
+    $("#publicationRecord").show();
+
     // Get pubmedID:
     var pubmedID = document.getElementById("PubmedID").value;
     console.log("** parsed ID: " + pubmedID);
@@ -170,8 +176,8 @@ $('button[id=pmidTest]').click(function(){
 
     // Write report:
     if ( studies.length > 0){
-        $( "#publicationRecord" ).append( `<pre>[Info] Publication title: ${title}.</pre>` );
-        $( "#publicationRecord" ).append( `<pre>[Info] Number of studies: ${studyCount}</pre>`);
+        $( "#publicationRecord" ).append( `<p>[Info] Publication title: ${title}.</p>` );
+        $( "#publicationRecord" ).append( `<p>[Info] Number of studies: ${studyCount}</p>`);
 
         // Parsing study data:
         parsedStudyData = parseStudyData(studies);
