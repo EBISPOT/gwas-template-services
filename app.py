@@ -4,7 +4,6 @@ from flask_cors import CORS, cross_origin
 import sys
 
 # Import logging related functions:
-# from logging.config import dictConfig
 import logging
 
 # Importing custom modules:
@@ -12,7 +11,6 @@ from template.spreadsheet_builder import SpreadsheetBuilder
 from template.schemaJson_builder import jsonSchemaBuilder
 from config.properties import Configuration
 from schema_definitions.schemaLoader import schemaLoader
-
 import endpoint_utils as eu
 
 app = Flask(__name__)

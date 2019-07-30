@@ -90,7 +90,7 @@ function parseStudyData(studyData){
             "trait" : study.diseaseTrait.trait,
             "sample_description" : study.initialSampleSize
         });
-    };
+    }
 
     return parsedStudyData;
 }

@@ -111,6 +111,39 @@ Endpoint to generate a template spreadsheet in excel. Retruns a blob.
 * `accessionIDs` - Array of strings optional. If submitted it is assumed that the user is depositing summary 
 stats for an existing publication. The provided accession IDs will be pre-filled into the template.
 
+#### examples:
+
+Generate template for curators to deposity haplotype associations:
+
+```bash
+curl -X POST "http://localhost:9000/v1/templates" \
+    -d curator=true \
+    -d haplotype=true > template.xlsx
+```
+
+Generate template for a non-curator user, where studies have background trait, association effect is given in beta.
+
+```bash
+curl -X POST "http://localhost:9000/v1/templates"  \
+    -d backgroundTrait=true \
+    -d effect=beta > template.xlsx
+```
+
+Generate template for depositing sumamry stats for already published studies.
+
+```bash
+curl -X POST "http://localhost:9000/v1/templates"  \
+    -d summaryStats=true > template.xlsx
+``` 
+
+Generate template for depositing sumamry stats for already published studies with pre-filled study metadata for an easier identification.
+
+```bash
+curl -X POST "http://localhost:9000/v1/templates"  \
+    -d prefillData='{"study":[{"study_accession":"GCST002728","trait":"Yang-deficiency constitution","sample_description":"30 cases, 30 balanced constitution controls"}]}' \
+    -d summaryStats=true > template_2.xlsx 
+``` 
+
 ### `/template_download_test`
 
 It's a html page to demonstrate the behavior of the customizable template spread sheet generation.

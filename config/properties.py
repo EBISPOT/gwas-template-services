@@ -18,13 +18,13 @@ class Configuration():
             }
         },
         'beta' : {
-            'addColumn': {
-                'association': ['beta', 'beta_unit', 'standard_error']
+            'removeColumn': {
+                'association': ['odds_ratio', 'ci_lower', 'ci_upper']
             }
         },
         'OR' : {
-            'addColumn': {
-                'association': ['odds_ratio', 'ci_lower', 'ci_upper']
+            'removeColumn': {
+                'association': ['beta', 'beta_unit', 'standard_error']
             }
         },
         'backgroundTrait' : {
