@@ -160,7 +160,7 @@ def _set_log_path(properties):
 # The following endpoint serves testing purposes only to demonstrate the flexibility of the template generation.
 @app.route('/template_download_test')
 @cross_origin()
-def hello():
+def template_test():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Allow-Headers", "*")

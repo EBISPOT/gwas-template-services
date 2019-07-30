@@ -73,8 +73,8 @@ class TestEndpointUtils(unittest.TestCase):
         self.assertIsInstance(output[testKey], pd.DataFrame)
 
         # Test if the returned dataframe is exactly what we are expecting:
-        # testDataFrame = pd.DataFrame(goodInput[testKey])
-        # self.assertEqual(output[testKey], testDataFrame)
+        testDataFrame = pd.DataFrame(goodInput[testKey])
+        self.assertTrue(output[testKey].equals(testDataFrame))
 
     def test_schema_parser(self):
 

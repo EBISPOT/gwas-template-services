@@ -71,5 +71,8 @@ class TestWebApplication(unittest.TestCase):
         response = self.tester.post('/v1/templates', content_type='html/json')
         self.assertEqual(response.status_code, 200)
 
+        # Test if the returned value is a blob:
+
+
 if __name__ == '__main__':
     unittest.main()
