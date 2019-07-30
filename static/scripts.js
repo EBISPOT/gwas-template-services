@@ -91,17 +91,19 @@ function parseStudyData(studyData){
             "sample_description" : study.initialSampleSize
         });
     }
-
     return parsedStudyData;
 }
 
 // Parse form data
-function getFormData(formData){
-    var JSON = {}
+function generateCurlCommand(formData){
+    var curlCommand = `curl -X POST \"${location.origin}/v1/templates\"`;
+
     for (var pair of formData.entries()) {
-        JSON[pair[0]] = pair[1];
+        curlCommand += ` \\&#10;    -d ${pair[0]}='${pair[1]}'`;
     }
-    return JSON;
+    //curlCommand.replace(/\\/g, "");
+    curlCommand += " > template.xlsx";
+    return curlCommand;
 }
 
 // Call API to generate template:
@@ -118,11 +120,10 @@ $("button[id=generate]").click(function generateTemplate(){
     xhr.responseType = "blob";
 
     // Printing out request body:
-    var requestString = JSON.stringify(getFormData(parameters), null, 4);
-    requestString = requestString.replace(/\\/g, "");
+    var curlString = generateCurlCommand(parameters);
 
     $( "#requestBody" ).empty();
-    $( "#requestBody" ).append( `<p>[Info] This is the request body sent to the template generator endpoint:<br>${requestString}</p>` );
+    $( "#requestBody" ).append( `<p>[Info] This is the equivalent curl command:<br>${curlString}</p>` );
 
     xhr.send(parameters);
     xhr.onload = function() {

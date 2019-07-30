@@ -62,7 +62,7 @@ class templateGenerator(Resource):
 
         # If the returned data is not a dictionary, the function needs to fail:
         if not isinstance(prefillData, dict):
-            print( {"Error" : "parsing pre-fill data failed."})
+            print({"Error" : "parsing pre-fill data failed."})
 
         # Reading all schema files into a single ordered dictionary:
         schemaVersion = Configuration.schemaVersion
