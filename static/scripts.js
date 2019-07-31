@@ -45,6 +45,10 @@ function getStudies(pmid){
     var REST_URL = `http://${location.hostname}:8080/gwas/rest/api`;
     var URL = `${REST_URL}/studies/search/findByPublicationIdPubmedId?pubmedId=${pmid}&size=1000`;
     var result = null;
+
+    // Cleaning panel:
+    $( "#publicationRecord" ).empty();
+
     $.ajax({
         url: URL,
         type: "get",
@@ -176,7 +180,7 @@ $("button[id=pmidTest]").click(function(){
         parsedStudyData = parseStudyData(studies);
     }
     else {
-        $( "#publicationRecord" ).append( `[Info] Retrieving data from the GWAS Catalog REST API was successful.` );
+        $( "#publicationRecord" ).append( `[Warning] No study was found for that pubmed ID.` );
         return;
     }
 });
