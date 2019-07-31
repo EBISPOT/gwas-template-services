@@ -61,11 +61,6 @@ class TestWebApplication(unittest.TestCase):
         # Do we see the supported schema:
         self.assertIn(self.mostRecentSchemaVersion, schema['supported_versions'])
 
-    def test_template_download_test(self):
-        # Just check if the endpoint gives 200 response:
-        response = self.tester.get('/template_download_test', content_type='html/json')
-        self.assertEqual(response.status_code, 200)
-
     def test_templates(self):
         # Submit quiery:
         response = self.tester.post('/v1/templates', content_type='html/json')
