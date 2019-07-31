@@ -144,10 +144,7 @@ curl -X POST "http://localhost:9000/v1/templates"  \
     -d summaryStats=true > template_2.xlsx 
 ``` 
 
-### `/template_download_test`
-
-It's a html page to demonstrate the behavior of the customizable template spread sheet generation.
- 
+If pre-filled template is generated, the pre-filled values are password protected and users can only updated cells in columns were input is required.
 
 ## Using the stand-alone scripts
 
