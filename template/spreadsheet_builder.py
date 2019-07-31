@@ -136,7 +136,7 @@ class SpreadsheetBuilder:
             return None
 
         # Protecting spreadsheet: .add_format({'locked': 0})
-        self.writer_object.sheets[tabname].protect(password= 'gwas', options=self.protectionOptions)
+        self.writer_object.sheets[tabname].protect('gwas', self.protectionOptions)
 
         # Excluding all columns of the dataframe which is not in the sheet:
         preFillDataFrame = preFillDataFrame[[x for x in preFillDataFrame.columns if x in self._columnNames[tabname]]]

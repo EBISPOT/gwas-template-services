@@ -17,7 +17,7 @@ function parseForm() {
     // Check if the summary stats checkbox is ticked:
     if ($("input[id=summaryStats]").is(":checked")){
         parameters.append("summaryStats", "true");
-    };
+    }
 
     // Check if user uploads summary stats and the parsed study data is filled:
     if ( Object.keys(parsedStudyData).length > 0 && $("input[id=summaryStats]").is(":checked") ){
