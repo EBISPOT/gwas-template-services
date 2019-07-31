@@ -153,19 +153,10 @@ def _set_log_level(LOG_CONF, LOG_LEVEL):
         LOG_CONF['loggers'][loggr]['level'] = LOG_LEVEL
     return LOG_CONF
 
+
 # Function for logging:
 def _set_log_path(properties):
     return register_logger.set_log_path(properties)
-
-# The following endpoint serves testing purposes only to demonstrate the flexibility of the template generation.
-@app.route('/template_download_test')
-@cross_origin()
-def template_test():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "*")
-    response.headers.add("Access-Control-Allow-Methods", "*")
-    return render_template('template_test.html')
 
 
 if __name__ == '__main__':
