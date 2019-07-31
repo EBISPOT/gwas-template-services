@@ -20,7 +20,7 @@ function parseForm() {
     };
 
     // Check if user uploads summary stats and the parsed study data is filled:
-    if ( Object.keys(parsedStudyData).length > 0 ){
+    if ( Object.keys(parsedStudyData).length > 0 && $("input[id=summaryStats]").is(":checked") ){
         parameters.append("prefillData", JSON.stringify(parsedStudyData));
     }
 
@@ -149,11 +149,17 @@ $("input[id=summaryStats]").change(function(){
         // Show option add pmid:
         $("#summaryStatsForm").show();
     }
+    else {
+        // hide option add pmid:
+        $("#summaryStatsForm").hide();
+    }
 });
 
 
 // A function to retrieve the pubmed ID from the REST API:
 $("button[id=pmidTest]").click(function(){
+    // Before each call, the value is emptied:
+    parsedStudyData  = {};
 
     // Show report box:
     $("#publicationRecord").show();
