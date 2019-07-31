@@ -12,6 +12,11 @@ class SpreadsheetBuilder:
     This class generates formatted template files in xlsx format based on the provided dataframes.
     """
 
+    # What can users do if worksheet is protected:
+    protectionOptions = {
+        'format_columns': True,
+    }
+
     # Data line marker:
     dataMarker = 'Add your data below this line'
 
@@ -27,10 +32,16 @@ class SpreadsheetBuilder:
     formatHighlightManadatory = {'bold': True, 'bg_color': '#F2CBA9',
                                  'font_size': 12, 'valign': 'vcenter','locked': True}
 
-    def __init__(self, output_file = None, version = None):
+    # Protected format:
+    formatProtected = {'locked' : 0}
+
+    def __init__(self, output_file = None, version = None, dataMarker = None):
 
         if not output_file:
             output_file = io.BytesIO()
+
+        if dataMarker:
+            self.dataMarker = dataMarker
 
         self.output_file = output_file
 
@@ -52,6 +63,9 @@ class SpreadsheetBuilder:
 
         # Defining format for header highlights:
         self.mandatory_format = self.workbook.add_format(self.formatHighlightManadatory)
+
+        # Defining format for protected cells:
+        self.protected_format = self.workbook.add_format(self.formatProtected)
 
         # Define column format to set values as text:
         self.setTextFormat = self.workbook.add_format()
@@ -95,7 +109,7 @@ class SpreadsheetBuilder:
         worksheet_object.freeze_panes(2, 0)
 
         # Add Comment and format row:
-        worksheet_object.write(3, 0, "Add your data below this line", self.header_format)
+        worksheet_object.write(3, 0, self.dataMarker, self.header_format)
         worksheet_object.set_row(3, None, self.header_format)
 
         # highlight mandatory fields:
@@ -120,6 +134,9 @@ class SpreadsheetBuilder:
         if tabname not in self.writer_object.sheets:
             print("[Warning] {} tab does not exist in spreadsheet.".format(tabname))
             return None
+
+        # Protecting spreadsheet: .add_format({'locked': 0})
+        self.writer_object.sheets[tabname].protect(password= 'gwas', options=self.protectionOptions)
 
         # Excluding all columns of the dataframe which is not in the sheet:
         preFillDataFrame = preFillDataFrame[[x for x in preFillDataFrame.columns if x in self._columnNames[tabname]]]
@@ -147,6 +164,16 @@ class SpreadsheetBuilder:
                 # Update value in dataframe:
                 cell = xl_rowcol_to_cell(row['rowIndex'] + 4, colIndex)
                 self.writer_object.sheets[tabname].write(cell, value)
+
+        # Looping through all the
+        for columnIndex in range(len(self._columnNames[tabname])):
+
+            # Skipping columns where we added data:
+            if columnIndex in colIndexes.values():
+                self.writer_object.sheets[tabname].set_column(columnIndex, columnIndex, 35)
+            else:
+                # Empty columns are released from the lock:
+                self.writer_object.sheets[tabname].set_column(columnIndex, columnIndex,  20, self.protected_format)
 
         preFillDataFrame.apply(__add_prefill_data, axis = 1)
 
