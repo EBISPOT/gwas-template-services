@@ -167,12 +167,13 @@ $("button[id=pmidTest]").click(function(){
     // Filter REST response:
     studies = studies._embedded.studies;
 
-    // Extract meta-data:
-    var title = studies[0].publicationInfo.title;
-    var studyCount = studies.length;
-
     // Write report:
     if ( studies.length > 0){
+
+        // Extract meta-data:
+        var title = studies[0].publicationInfo.title;
+        var studyCount = studies.length;
+
         $( "#publicationRecord" ).append( `<p>[Info] Publication title: ${title}.</p>` );
         $( "#publicationRecord" ).append( `<p>[Info] Number of studies: ${studyCount}</p>`);
 
