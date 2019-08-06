@@ -54,6 +54,9 @@ class templateGenerator(Resource):
         if 'effect' in args: filterParameters['effect'] = args['effect']
         if 'summaryStats' in args: filterParameters['summaryStats'] = True if args['summaryStats'] == "true" else False
 
+        # Set submission types:
+        submissionType = 'SUMMARY_STATS' if filterParameters['summaryStats'] else 'METADATA'
+
         # Parse pre-fill data if present:
         if args.prefillData is not None:
             prefillData = eu.preFillDataParser(args.prefillData)
@@ -73,7 +76,7 @@ class templateGenerator(Resource):
         print('[Info] Filter paramters: {}'.format(filterParameters.__str__()))
 
         # Initialize spreadsheet builder object:
-        spreadsheet_builder = SpreadsheetBuilder(version=schemaVersion)
+        spreadsheet_builder = SpreadsheetBuilder(version=schemaVersion, submissionType=submissionType)
 
         for schema in schemaDataFrames.keys():
 

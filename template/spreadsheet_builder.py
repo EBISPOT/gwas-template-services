@@ -12,6 +12,12 @@ class SpreadsheetBuilder:
     This class generates formatted template files in xlsx format based on the provided dataframes.
     """
 
+    # Set default schema vesion:
+    version = 'Not_specified'
+
+    # Set default submission types:
+    submissionType = 'METADATA'
+
     # What can users do if worksheet is protected:
     protectionOptions = {
         'format_columns': True,
@@ -35,13 +41,17 @@ class SpreadsheetBuilder:
     # Protected format:
     formatProtected = {'locked' : 0}
 
-    def __init__(self, output_file = None, version = None, dataMarker = None):
+    def __init__(self, output_file = None, version = None, dataMarker = None, submissionType = None):
 
         if not output_file:
             output_file = io.BytesIO()
 
         if dataMarker:
             self.dataMarker = dataMarker
+
+        # overwrite submission type if provided by the caller:
+        if submissionType:
+            self.submissionType = submissionType
 
         self.output_file = output_file
 
@@ -51,9 +61,11 @@ class SpreadsheetBuilder:
 
         # Set version if specified:
         if version:
-            self.workbook.set_properties({
-                'comments' : 'schemaVersion={}'.format(version),
-                'subject': 'GWAS Catalog template spreadsheet.'})
+            self.version = version
+
+        self.workbook.set_properties({
+            'comments' : 'schemaVersion={} submissionType={}'.format(self.version, self.submissionType),
+            'subject': 'GWAS Catalog template spreadsheet.'})
 
         # Define formatting for the column headers:
         self.header_format = self.workbook.add_format(self.formatHeader)
