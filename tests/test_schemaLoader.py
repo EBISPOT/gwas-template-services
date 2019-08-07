@@ -7,6 +7,10 @@ from pandas import DataFrame
 
 class TestSchemaLoader(unittest.TestCase):
 
+    # Publicly accessed methods that needs to be checked:
+    methodList = ['load_schema', 'get_submissionTypes', 'get_versions', 'get_schema']
+
+    # Get supported schema version:
     mostRecentSchema = Configuration.schemaVersion
 
     # A function to test if the object has a specific attribute:
@@ -25,11 +29,9 @@ class TestSchemaLoader(unittest.TestCase):
         # Was the initialization successful:
         self.assertIsInstance(loader, schemaLoader)
 
-        # Testing if method exists:
-        self.assertHasAttr(loader, 'get_versions')
-
-        # Testing if method exists:
-        self.assertHasAttr(loader, 'read_schema')
+        # Testing if public methods exists:
+        for method in self.methodList:
+            self.assertHasAttr(loader, method)
 
         # Store loader object:
         self.loader = loader
@@ -46,9 +48,10 @@ class TestSchemaLoader(unittest.TestCase):
         self.assertIn(self.mostRecentSchema,versions)
 
     # Testing if the returned schema data looks good:
-    def testRead_schema(self):
+    def testLoad_schema(self):
         loader = schemaLoader()
-        schemaData = loader.read_schema(self.mostRecentSchema)
+        loader.load_schema(self.mostRecentSchema)
+        schemaData = loader.get_schema()
 
         # Is the returned data a list:
         self.assertIsInstance(schemaData, OrderedDict)
@@ -56,6 +59,16 @@ class TestSchemaLoader(unittest.TestCase):
         # Checking if all values of the dictionary is a pandas dataframe:
         for data in schemaData.values():
             self.assertIsInstance(data, DataFrame)
+
+    # Check if we have the supported submission types:
+    def testGet_submisstionTypes(self):
+        loader = schemaLoader()
+        loader.load_schema(self.mostRecentSchema)
+
+        # Fetch submission types:
+        supportedSubmissionTypes = loader.get_submissionTypes()
+
+        self.assertIsInstance(supportedSubmissionTypes, list)
 
 if __name__ == '__main__':
     unittest.main()
