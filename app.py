@@ -170,9 +170,8 @@ class schemaJSON(Resource):
             return {
                 'error' : 'the provided submission type ({}) is not supported.'.format(submissionType),
                 'schema_version' : schema_version ,
-                'available_submission_types' : sv.get_submissionTypes()
-            }
-        
+                'available_submission_types' : sv.get_submissionTypes()}
+
         schemaDataFrames = sv.get_schema(submissionType)
 
         JSON_builder = jsonSchemaBuilder(schema_version, triggerRow = Configuration.triggerRow)
