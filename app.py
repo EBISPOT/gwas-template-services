@@ -70,7 +70,8 @@ class templateGenerator(Resource):
         # Reading all schema files into a single ordered dictionary:
         schemaVersion = Configuration.schemaVersion
         sv = schemaLoader()
-        schemaDataFrames = sv.read_schema(schemaVersion)
+        sv.load_schema(schemaVersion)
+        schemaDataFrames = sv.get_schema(submissionType)
 
         # Print report:
         print('[Info] Filter paramters: {}'.format(filterParameters.__str__()))
@@ -122,8 +123,7 @@ class SchemaList(Resource):
 
 
 @api.route('/v1/template-schema/<string:schema_version>')
-class schemaJSON(Resource):
-
+class submissionTypes(Resource):
     def get(self, schema_version):
 
         # Get all versions:
@@ -138,8 +138,42 @@ class schemaJSON(Resource):
             }
 
         # Extract json schema:
-        schemaDataFrames = sv.read_schema(schema_version)
-        # return { 'sheets' : list(schemaDataFrames.keys())}
+        sv.load_schema(schema_version)
+
+        # return available submission types:
+        returnData = { 'schema_version' : schema_version , 'submission_types' : {}}
+        for submissionType in sv.get_submissionTypes():
+            returnData["submission_types"][submissionType] = { 'href': '{}/v1/template-schema/{}/{}'.format(request.url_root, str(schema_version), submissionType) }
+
+        return(returnData)
+
+@api.route('/v1/template-schema/<string:schema_version>/<string:submissionType>')
+class schemaJSON(Resource):
+
+    def get(self, schema_version, submissionType):
+
+        # Get all versions:
+        sv = schemaLoader()
+        supported_versions = sv.get_versions()
+
+        # Is it a supported version:
+        if not schema_version in supported_versions:
+            return {
+                'error' : 'Unknown schema versions',
+                'supported_versions': supported_versions
+            }
+
+        # Extract json schema:
+        sv.load_schema(schema_version)
+
+        if submissionType not in sv.get_submissionTypes():
+            return {
+                'error' : 'the provided submission type ({}) is not supported.'.format(submissionType),
+                'schema_version' : schema_version ,
+                'available_submission_types' : sv.get_submissionTypes()
+            }
+        
+        schemaDataFrames = sv.get_schema(submissionType)
 
         JSON_builder = jsonSchemaBuilder(schema_version, triggerRow = Configuration.triggerRow)
         for sheet, df in schemaDataFrames.items():
