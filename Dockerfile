@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.3.14
+FROM continuumio/miniconda3:4.6.14
 
 # Updating conda:
 RUN conda update -n base -c defaults conda

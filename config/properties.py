@@ -8,44 +8,21 @@ class Configuration():
         'curator' : {
             'addColumn' : {
                 'notes': ['study_tag', 'note', 'note_subject', 'status'],
-                'study': ['efo_trait'],
-                'sample': ['ancestry']
-            }
-        },
-        'haplotype' : {
-            'addColumn': {
-                'association' : ['haplotype_id']
-            }
-        },
-        'beta' : {
-            'removeColumn': {
-                'association': ['odds_ratio', 'ci_lower', 'ci_upper']
-            }
-        },
-        'OR' : {
-            'removeColumn': {
-                'association': ['beta', 'beta_unit', 'standard_error']
-            }
-        },
-        'backgroundTrait' : {
-            'addColumn': {
-                'study' : ['background_trait']
-            }
-        },
-        'snpxsnp' : {
+                'study': ['efo_trait', 'background_efo_trait'],
+                'sample': ['ancestry'],
+                'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
+                                'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
+                                'beta_unit', 'standard_error'],
 
-        },
-        'curator_backgroundTrait': {
-            'addColumn': {
-                'study': ['background_efo_trait']
             }
         },
-
         'summaryStats' : {
             'removeColumn': {
-                'study': ['efo_trait','array_manufacturer', 'genotyping_technology', 'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description'],
-                'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category', 'ancestry', 'ancestry_description', 'country_recruitement'],
-                'association': ['haplotype_id', 'beta', 'beta_unit', 'odds_ratio', 'ci_lower', 'ci_upper','standard_error','study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'effect_allele', 'other_allele', 'effect_allele_frequency']
+                'study': ['study_tag', 'background_trait', 'efo_trait','array_manufacturer', 'genotyping_technology',
+                          'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description'],
+                'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category',
+                           'ancestry', 'ancestry_description', 'country_recruitement'],
+                'notes': ['study_tag', 'note', 'note_subject', 'status'],
             },
             'addColumn': {
                 'study': ['study_accession', 'sample_description','cohort', 'cohort_id']

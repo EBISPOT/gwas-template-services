@@ -26,10 +26,6 @@ cors = CORS(app)
 # Parameters for filtering template spreadsheets:
 templateParams = api.parser()
 templateParams.add_argument('curator', type=str, required=False, help='If the user is a curator or not.')
-templateParams.add_argument('haplotype', type=str, required=False, help='If the associations are haplotypes or not.')
-templateParams.add_argument('snpxsnp', type=str, required=False, help='If the associations are SNP x SNP interactions or not.')
-templateParams.add_argument('effect', type=str, required=False, help='How the effect is expressed.')
-templateParams.add_argument('backgroundTrait', type=str, required=False, help='If backgroundtrait is present or not.')
 templateParams.add_argument('summaryStats', type=str, required=False, help='If the user wants to submit summary stats or not.')
 
 # Pre-fill data is submitted as string that will be parsed as JSON:
@@ -48,10 +44,6 @@ class templateGenerator(Resource):
         # parse filter based on the input parameters:
         filterParameters = {}
         if 'curator' in args: filterParameters['curator'] = True if args['curator'] == "true" else False
-        if 'haplotype' in args: filterParameters['haplotype'] = True if args['haplotype'] == "true" else False
-        if 'snpxsnp' in args: filterParameters['snpxsnp'] = True if args['snpxsnp'] == "true" else False
-        if 'backgroundTrait' in args: filterParameters['backgroundTrait'] = True if args['backgroundTrait'] == "true" else False
-        if 'effect' in args: filterParameters['effect'] = args['effect']
         if 'summaryStats' in args: filterParameters['summaryStats'] = True if args['summaryStats'] == "true" else False
 
         # Set submission types:
