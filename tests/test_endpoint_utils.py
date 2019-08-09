@@ -29,9 +29,9 @@ class TestEndpointUtils(unittest.TestCase):
     def test_preFillDataParser(self):
 
         # failInput1 = 'This string is not JSON serializable' # Not JSON serializable object
-        failInput2 = '[12, "Test"]' # JSON serializable, but not properly formatted object
-        failInput3 = '{"foo" : 12 }' # dictionary, but values are not lists
-        failInput4 = '{"foo" : [12, 3, "bar"]}' # Dictionary with list, but list elements are not dictionaries
+        failInput2 = [12, "Test"] # JSON serializable, but not properly formatted object
+        failInput3 = {"foo" : 12 } # dictionary, but values are not lists
+        failInput4 = {"foo" : [12, 3, "bar"]} # Dictionary with list, but list elements are not dictionaries
         goodInput = {
             "foo" : [
                 {
@@ -60,7 +60,7 @@ class TestEndpointUtils(unittest.TestCase):
         self.assertEqual(eu.preFillDataParser(failInput4), "[Error] Pre-fill data should be an array of dictionaries")
 
         # Testing proper output:
-        output = eu.preFillDataParser(json.dumps(goodInput))
+        output = eu.preFillDataParser(goodInput)
 
         # Test if the output is a dictionary:
         self.assertIsInstance(output, dict)

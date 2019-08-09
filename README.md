@@ -103,45 +103,61 @@ Endpoint to generate a template spreadsheet in excel. Retruns a blob.
 
 **Parameters:**
 
-* `curator` - Describing if a user is member of the curator group or not (optional, yes/no)
-* `haplotype` - If the user is depositing haplotype based associations (optional, yes/no)
-* `snpxsnp` - If the user is depositing SNP x SNP interaction based associations (optional, yes/no)
-* `effect` - How the effect of the association is expressed (Ooptional, R/beta)
-* `backgroundTrait` - If the study applied background traits (optional, yes/no)
-* `accessionIDs` - Array of strings optional. If submitted it is assumed that the user is depositing summary 
-stats for an existing publication. The provided accession IDs will be pre-filled into the template.
+* `curator` - Describing if a user is member of the curator group or not (type: `boolean`, optional, default: `false`) 
+* `summaryStats` - if submitting full metadata (`false`) of summary statistics (`true`). (type: `boolean`, optional, default: `false`)
+* `prefillData` - if data sent to the endpoint to prefill certain cells.
+
+**Structure of the pre-fill data:**
+
+```json
+{
+  "sheetName": [
+    {
+      "column1": "c1_value1",
+      "column2": "c2_value1",
+      "column3": "c3_value1"
+    },
+    {
+      "column1": "c1_value2",
+      "column2": "c2_value2",
+      "column3": "c3_value2"
+    }
+  ]
+}
+```
 
 #### examples:
 
-Generate template for curators to deposity haplotype associations:
+Generate template for curators to deposity full metadata set:
 
 ```bash
 curl -X POST "http://localhost:9000/v1/templates" \
-    -d curator=true \
-    -d haplotype=true > template.xlsx
+    -d  '{"curator" : true}' \
+    -H "Content-Type: application/json" > template.xlsx
 ```
 
-Generate template for a non-curator user, where studies have background trait, association effect is given in beta.
+Generate template for a non-curator user, where studies don't have mapped traits, and associations are not shown:
 
 ```bash
-curl -X POST "http://localhost:9000/v1/templates"  \
-    -d backgroundTrait=true \
-    -d effect=beta > template.xlsx
+curl -X POST "http://localhost:9000/v1/templates" \
+    -d  '{"curator" : false}' \
+    -H "Content-Type: application/json" > template.xlsx
 ```
 
 Generate template for depositing sumamry stats for already published studies.
 
 ```bash
-curl -X POST "http://localhost:9000/v1/templates"  \
-    -d summaryStats=true > template.xlsx
+curl -X POST "http://localhost:9000/v1/templates" \
+    -d  '{"summaryStats" : true}' \
+    -H "Content-Type: application/json" > template.xlsx
 ``` 
 
 Generate template for depositing sumamry stats for already published studies with pre-filled study metadata for an easier identification.
 
 ```bash
-curl -X POST "http://localhost:9000/v1/templates"  \
-    -d prefillData='{"study":[{"study_accession":"GCST002728","trait":"Yang-deficiency constitution","sample_description":"30 cases, 30 balanced constitution controls"}]}' \
-    -d summaryStats=true > template_2.xlsx 
+curl -X POST "http://localhost:9000/v1/templates" \
+    -d  '{"summaryStats" : true, "prefillData" : {"study":[{"study_accession":"GCST002728","trait":"Yang-deficiency constitution","sample_description":"30 cases, 30 balanced constitution controls"}]}}' \
+    -H "Content-Type: application/json" > template.xlsx
 ``` 
 
 If pre-filled template is generated, the pre-filled values are password protected and users can only updated cells in columns were input is required.

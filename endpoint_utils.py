@@ -2,7 +2,7 @@ import json
 import pandas as pd
 
 
-def preFillDataParser(inputString):
+def preFillDataParser(inputData):
     """
     This function parses the input string given to the template generator.
     Checks a few things then returns a dictionary of dataframes.
@@ -20,12 +20,6 @@ def preFillDataParser(inputString):
     :type JSON string
     :return: pandas dataframe
     """
-
-    # Try to parse the data as JSON:
-    try:
-        inputData = json.loads(inputString)
-    except TypeError:
-        return "[Error] Pre-fill data cannot be read as JSON."
 
     # If it goes alright, test if it is a dictionary:
     if not isinstance(inputData, dict):
