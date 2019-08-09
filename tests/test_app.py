@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 from config.properties import Configuration
+import json
 
 # Adding app folder to Python path:
 appFolder = os.path.dirname(os.path.realpath(__file__))
@@ -106,7 +107,11 @@ class TestWebApplication(unittest.TestCase):
     def test_templates(self):
         # Submit quiery:
         response = self.tester.post('/v1/templates', content_type='html/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
+
+        # Submit query:
+        # response = self.tester.post('/v1/templates', content_type='html/json', json = {})
+        # self.assertEqual(response.status_code, 200)
 
         # Test if the returned value is a blob:
 
