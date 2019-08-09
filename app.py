@@ -27,8 +27,7 @@ cors = CORS(app)
 templateParams = api.model( "Template generator parameters",{
     'curator' : fields.Boolean(description="Is the uploader a curator? (default: false)", required=False, default=False),
     'summaryStats' : fields.Boolean(description="Is it as summary statistics submission? (default: false)", required=False, default=False),
-    'submissionType' : fields.String(description='Type of the submission (default: METADATA).', required = False, default = 'METADATA'),
-    'prefillData' : fields.String(description='Data to be added to the template.', location="json", required = False )
+    'prefillData' : fields.String(description='Data to be added to the template.', required = False )
 })
 
 
@@ -37,7 +36,7 @@ templateParams = api.model( "Template generator parameters",{
 class templateGenerator(Resource):
 
     @api.doc('Generate template')
-    @api.expect(templateParams, validate = True)
+    @api.expect(templateParams)
     def post(self):
 
         # Extracting parameters:
@@ -46,10 +45,9 @@ class templateGenerator(Resource):
         # parse filter based on the input parameters:
         if 'curator' not in filterParameters: filterParameters['curator'] = False
         if 'summaryStats' not in filterParameters: filterParameters['summaryStats'] = False
-        if 'submissionType' not in filterParameters:
-            filterParameters['submissionType'] = 'METADATA'
-        elif filterParameters['submissionType'] != 'SUMMARY_STATS':
-            filterParameters['submissionType'] = 'METADATA'
+
+        # Based on the parameters, we decide on the submission type:
+        submissionType = 'SUMMARY_STATS' if filterParameters['summaryStats'] else 'METADATA'
 
         # Parse pre-fill data if present:
         if 'prefillData' in filterParameters:
@@ -65,13 +63,13 @@ class templateGenerator(Resource):
         schemaVersion = Configuration.schemaVersion
         sv = schemaLoader()
         sv.load_schema(schemaVersion)
-        schemaDataFrames = sv.get_schema(filterParameters['submissionType'])
+        schemaDataFrames = sv.get_schema(submissionType)
 
         # Print report:
         print('[Info] Filter paramters: {}'.format(filterParameters.__str__()))
 
         # Initialize spreadsheet builder object:
-        spreadsheet_builder = SpreadsheetBuilder(version=schemaVersion, submissionType=filterParameters['submissionType'])
+        spreadsheet_builder = SpreadsheetBuilder(version=schemaVersion, submissionType=submissionType)
 
         for schema in schemaDataFrames.keys():
 
