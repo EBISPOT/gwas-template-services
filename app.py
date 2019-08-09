@@ -1,5 +1,5 @@
 from flask import Flask, request, send_file
-from flask_restplus import Resource, Api, model, fields, Namespace
+from flask_restplus import Resource, Api, fields
 from flask_cors import CORS
 import sys
 
@@ -24,16 +24,6 @@ api = Api(app, default=u'Template services',
 cors = CORS(app)
 
 # Parameters for filtering template spreadsheets:
-# templateParams = api.parser()
-# templateParams.add_argument('curator', type=str, required=False, help='If the user is a curator or not.')
-# templateParams.add_argument('summaryStats', type=str, required=False, help='If the user wants to submit summary stats or not.')
-#
-# # Pre-fill data is submitted as string that will be parsed as JSON:
-# templateParams.add_argument('prefillData', type=str, required=False, help='Contain data to pre-fill templates.')
-
-# class templateParams:
-#     api = Namespace('Template', description="Template generator parameters")
-
 templateParams = api.model( "Template generator parameters",{
     'curator' : fields.Boolean(description="Is the uploader a curator? (default: false)", required=False, default=False),
     'summaryStats' : fields.Boolean(description="Is it as summary statistics submission? (default: false)", required=False, default=False),
@@ -41,7 +31,7 @@ templateParams = api.model( "Template generator parameters",{
     'prefillData' : fields.String(description='Data to be added to the template.', location="json", required = False )
 })
 
-#
+
 # REST endpoint for providing the template spreadsheets:
 @api.route('/v1/templates')
 class templateGenerator(Resource):

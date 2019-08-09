@@ -2,7 +2,6 @@ import unittest
 import sys
 import os
 from config.properties import Configuration
-import json
 
 # Adding app folder to Python path:
 appFolder = os.path.dirname(os.path.realpath(__file__))
