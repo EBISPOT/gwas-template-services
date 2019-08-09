@@ -40,7 +40,7 @@ class templateGenerator(Resource):
     def post(self):
 
         # Extracting parameters:
-        filterParameters = request.json
+        filterParameters = request.json if request.json else {}
 
         # parse filter based on the input parameters:
         if 'curator' not in filterParameters: filterParameters['curator'] = False
