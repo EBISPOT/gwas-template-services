@@ -1,6 +1,6 @@
-from flask import Flask, request, render_template, send_file, make_response
+from flask import Flask, request, send_file
 from flask_restplus import Resource, Api
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import sys
 
 # Import logging related functions:
@@ -199,4 +199,3 @@ if __name__ == '__main__':
     print("[Info] Log level to {}".format(Configuration.LOG_LEVEL))
     Configuration.LOG_CONF = eu._set_log_level(LOG_CONF=Configuration.LOG_CONF, LOG_LEVEL=Configuration.LOG_LEVEL)
     logging.config.dictConfig(Configuration.LOG_CONF)
-
