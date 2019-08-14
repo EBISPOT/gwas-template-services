@@ -55,7 +55,8 @@ deploy_prod:
   script:
     - echo "Deploy to production server"
   environment:
-    name: production
+    name: production 
+    url: http://www.ebi.ac.uk/gwas/submissions/template
   when: manual
   only:
    - tags
