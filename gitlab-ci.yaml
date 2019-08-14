@@ -1,0 +1,22 @@
+image: docker:latest
+ 
+stages:
+  - build
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - docker info
+
+build:
+  stage: build
+  script:
+   - docker login -u "${DOCKER_HUB_USER}" -p "${DOCKER_HUB_PASSWORD}"
+   - docker build -t gwas-deposition-template:1.$CI_PROJECT_BUILDS
+   - docker tag gwas-deposition-template:1.$CI_PROJECT_BUILDS gwas-deposition-template:latest
+   - docker push gwas-deposition-template:1.$CI_PROJECT_BUILDS gwas-deposition-template:latest
+   - docker logout
