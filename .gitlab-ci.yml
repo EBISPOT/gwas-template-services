@@ -15,7 +15,7 @@ before_script:
 build:
   stage: build
   tags:
-    - docker
+    - dind
   script:
    - docker build -t ebispot/gwas-deposition-template:1.$CI_PROJECT_BUILDS .
    - docker tag ebispot/gwas-deposition-template:1.$CI_PROJECT_BUILDS ebispot/gwas-deposition-template:latest
