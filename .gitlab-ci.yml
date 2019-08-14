@@ -8,14 +8,13 @@ services:
 
 variables:
   DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
 
 before_script:
    - docker login -u "${DOCKER_HUB_USER}" -p "${DOCKER_HUB_PASSWORD}"
    
 build:
   stage: build
-  tags:
-    - dind
   script:
    - docker build -t ebispot/gwas-deposition-template:1.$CI_PROJECT_BUILDS .
    - docker tag ebispot/gwas-deposition-template:1.$CI_PROJECT_BUILDS ebispot/gwas-deposition-template:latest
