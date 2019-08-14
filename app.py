@@ -2,6 +2,7 @@ from flask import Flask, request, send_file
 from flask_restplus import Resource, Api, fields
 from flask_cors import CORS
 import sys
+from urllib.parse import unquote
 
 # Import logging related functions:
 import logging
@@ -18,6 +19,8 @@ app = Flask(__name__)
 # Initialize API with swagger parameters:
 api = Api(app, default=u'Template services',
           default_label=u'GWAS Catalog template services',
+          description='This application was written to facilitate template releated services for the new deposition interface of the GWAS Catalog.',
+          doc='/documentation/',
           title = 'API documentation')
 
 # Enabling cross-site scripting (might need to be removed later):
@@ -109,9 +112,10 @@ class SchemaList(Resource):
         returnData = {"current_schema" : Configuration.schemaVersion, "schema_versions":{}}
 
         for version in supported_versions:
-            returnData["schema_versions"][version] = { 'href': '{}/v1/template-schema/{}'.format(request.url_root, version) }
+            returnData["schema_versions"][version] = {'href': unquote('{}/{}'.format(request.url, version))}
 
         return returnData
+
 
 
 @api.route('/v1/template-schema/<string:schema_version>')
@@ -135,7 +139,7 @@ class submissionTypes(Resource):
         # return available submission types:
         returnData = { 'schema_version' : schema_version , 'submission_types' : {}}
         for submissionType in sv.get_submissionTypes():
-            returnData["submission_types"][submissionType] = { 'href': '{}/v1/template-schema/{}/{}'.format(request.url_root, str(schema_version), submissionType) }
+            returnData["submission_types"][submissionType] = {'href': unquote('{}/{}'.format(request.url, submissionType))}
 
         return(returnData)
 
