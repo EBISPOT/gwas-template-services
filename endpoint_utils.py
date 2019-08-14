@@ -1,5 +1,6 @@
-import json
+from flask import url_for
 import pandas as pd
+from urllib.parse import unquote
 
 
 def preFillDataParser(inputData):
@@ -113,6 +114,6 @@ def set_log_path(conf):
 def _set_log_level(LOG_CONF, LOG_LEVEL):
     for handler in LOG_CONF['handlers']:
         LOG_CONF['handlers'][handler]['level'] = LOG_LEVEL
-    for loggr in LOG_CONF['loggers']:
-        LOG_CONF['loggers'][loggr]['level'] = LOG_LEVEL
+    for logger in LOG_CONF['loggers']:
+        LOG_CONF['loggers'][logger]['level'] = LOG_LEVEL
     return LOG_CONF
