@@ -15,7 +15,7 @@ before_script:
 build:
   stage: build
   script:
-   - docker build -t gwas-deposition-template:1.$CI_PROJECT_BUILDS
+   - docker build -t gwas-deposition-template:1.$CI_PROJECT_BUILDS .
    - docker tag gwas-deposition-template:1.$CI_PROJECT_BUILDS gwas-deposition-template:latest
    - docker push gwas-deposition-template:1.$CI_PROJECT_BUILDS gwas-deposition-template:latest
    - docker logout
