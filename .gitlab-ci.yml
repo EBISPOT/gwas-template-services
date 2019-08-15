@@ -47,10 +47,10 @@ deploy_staging:
   script:
     - echo "Deploy to staging server"
     - helm version
-    - echo "$SANBOX_KUBECONF"
+    - echo ${SANBOX_KUBECONF} | base64 -d > ${KUBECONFIG}
     - echo "$KUBE_URL"
     - mkdir -p /root/.kube
-    - echo "$SANBOX_KUBECONF" > /root/.kube/conf
+    - echo ${KUBECONFIG} | base64 -d > /root/.kube/conf
     - kubectl config get-contexts
   environment:
     name: sandbox
