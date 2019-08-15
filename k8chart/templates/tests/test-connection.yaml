@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "gwas-template-service.fullname" . }}-test-connection"
+  labels:
+{{ include "gwas-template-service.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['{{ include "gwas-template-service.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
