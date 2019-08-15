@@ -50,7 +50,7 @@ deploy_staging:
     - echo ${SANBOX_KUBECONF} | base64 -d > ${KUBECONFIG}
     - echo "$KUBE_URL"
     - mkdir -p /root/.kube
-    - echo ${KUBECONFIG} | base64 -d > /root/.kube/conf
+    - echo ${KUBECONFIG} > /root/.kube/conf
     - kubectl config get-contexts
   environment:
     name: sandbox
