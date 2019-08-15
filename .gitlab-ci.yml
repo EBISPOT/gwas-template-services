@@ -48,7 +48,7 @@ deploy_staging:
     - mkdir -p /root/.kube
     - echo ${SANBOX_KUBECONF} | base64 -d > /root/.kube/conf
     - helm init
-    - helm upgrade --install --set k8Namespace=default,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA gwas-template-service ./gwas-template-service/ --wait
+    - helm upgrade --install --set k8Namespace=default,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA gwas-template-service ./k8chart/ --wait
   environment:
     name: sandbox
     url: http://192.30.252.153/template
