@@ -46,6 +46,8 @@ deploy_staging:
   stage: deploy
   script:
     - echo "Deploy to staging server"
+    - helm version
+    - echo "$KUBE_URL"
     - mkdir -p /root/.kube
     - echo "$KUBECONFIG" > /root/.kube/conf
     - kubectl config get-contexts
