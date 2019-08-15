@@ -3,6 +3,6 @@ __pycache__
 .idea
 *pyc
 ~$*
-
+*~
 # Log file directory:
 logs/*
