@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: {{.Values.service.name}}
   namespace: {{.Values.k8Namespace}}
+  lables:
+    version: {{.Values.image.tag}}
 spec:
   replicas: {{.Values.replicaCount}}
   template:
@@ -39,6 +41,7 @@ apiVersion: v1
 metadata:
   labels:
     app: {{.Values.service.name}}
+    version: {{.Values.image.tag}}
   name: {{.Values.service.name}}
   namespace: {{.Values.k8Namespace}}
 spec:
