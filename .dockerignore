@@ -1,0 +1,7 @@
+README.md
+*~
+__pycache__
+.idea
+*pyc
+.DS_Store
+k8charts
