@@ -47,8 +47,8 @@ deploy_staging:
   script:
     - echo "Deploy to staging server"
     - mkdir -p /root/.kube
-    - echo ${SANBOX_KUBECONF} | base64 -d > /root/.kube/conf
-    - cat /root/.kube/conf
+    - echo ${SANBOX_KUBECONF} | base64 -d > /root/.kube/config
+    - cat /root/.kube/config
     - kubectl get services
     - helm init
     - helm delete --purge gwas-template-service || true
