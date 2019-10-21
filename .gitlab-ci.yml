@@ -50,7 +50,7 @@ deploy_staging:
     - echo ${SANDBOX_KUBECONF} | base64 -d > /root/.kube/config
     - helm init
     - helm delete --purge gwas-template-service || true
-    - helm install --name gwas-template-service --set k8Namespace=default,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
+    - helm install --name gwas-template-service --set k8Namespace=gwas,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
   environment:
     name: sandbox
   only:

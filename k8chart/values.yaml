@@ -40,7 +40,7 @@ ingress:
   #      - chart-example.local
 
 
-k8Namespace: default
+k8Namespace: gwas
 
 resources:
   limits:
