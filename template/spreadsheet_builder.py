@@ -12,6 +12,9 @@ class SpreadsheetBuilder:
     This class generates formatted template files in xlsx format based on the provided dataframes.
     """
 
+    # Set column width:
+    columnWidth = 25
+
     # Set default schema vesion:
     version = 'Not_specified'
 
@@ -108,7 +111,7 @@ class SpreadsheetBuilder:
         worksheet_object = self.writer_object.sheets[tabname]
 
         # Set column width:
-        worksheet_object.set_column(0, len(templateSheet.columns), 20, self.setTextFormat)
+        worksheet_object.set_column(0, len(templateSheet.columns), self.columnWidth, self.setTextFormat)
 
         # Formatting comment row:
         worksheet_object.set_row(0, None, self.desc_format)
@@ -127,6 +130,13 @@ class SpreadsheetBuilder:
         # highlight mandatory fields:
         for index, title in dataframe.loc[dataframe.MANDATORY, 'HEADER'].items():
             worksheet_object.write(1, index, title, self.mandatory_format)
+
+        # If the ACCEPTED column not empty we generating a drop-down menu with the accepted iterms:
+        for index, accepted_string in dataframe.loc[~dataframe.ACCEPTED.isnull()].ACCEPTED.iteritems():
+            print(index, accepted_string, flush=True)
+            worksheet_object.data_validation(4,index, 200, index, {'validate' : 'list', 'source' : accepted_string.split('|')})
+
+    # def _add_validation(self):
 
     def save_workbook(self):
         self.workbook.close()
