@@ -65,7 +65,7 @@ deploy_fallback:
     - echo ${PFALLBACK_KUBECONFIG} | base64 -d > /root/.kube/config
     - helm init
     - helm delete --purge gwas-template-service || true
-    - helm install --name gwas-template-service --set service.type=NodePort,k8Namespace=gwas,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
+    - helm install --name gwas-template-service --set image.env.basePath=/gwas/submission/template,service.type=NodePort,k8Namespace=gwas,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
   environment:
     name: fallback
   when: manual
@@ -81,7 +81,7 @@ deploy_prod:
     - echo ${PLIVE_KUBECONFIG} | base64 -d > /root/.kube/config
     - helm init
     - helm delete --purge gwas-template-service || true
-    - helm install --name gwas-template-service --set service.type=NodePort,k8Namespace=gwas,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
+    - helm install --name gwas-template-service --set image.env.basePath=/gwas/submission/template,service.type=NodePort,k8Namespace=gwas,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
   environment:
     name: production
     url: http://www.ebi.ac.uk/gwas/submission/template

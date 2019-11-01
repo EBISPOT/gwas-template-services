@@ -13,6 +13,7 @@ image:
   env:
     envName: "sandbox"
     logFileName: "gwas-template-service"
+    basePath: ""
   volume:
     claimName: gwas-depo-logs
 

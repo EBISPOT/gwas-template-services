@@ -36,6 +36,8 @@ spec:
           value: {{.Values.image.env.envName}}
         - name: LOG_FILE_NAME
           value: {{.Values.image.env.logFileName}}
+        - name: BASE_PATH
+          value: {{.Values.image.env.basePath}}
       volumes:
       - name: log
         persistentVolumeClaim:

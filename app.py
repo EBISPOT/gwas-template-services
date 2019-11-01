@@ -1,7 +1,8 @@
 from flask import Flask, request, send_file
 from flask_restplus import Resource, Api, fields
 from flask_cors import CORS
-import sys
+from flask import Blueprint, url_for
+import sys,os
 from urllib.parse import unquote
 
 # Import logging related functions:
@@ -16,12 +17,19 @@ import endpoint_utils as eu
 
 app = Flask(__name__)
 
+if 'BASE_PATH' not in os.environ:
+    os.environ['BASE_PATH'] = ""
+
+bp = Blueprint('template', __name__, url_prefix=os.environ['BASE_PATH'])
+
 # Initialize API with swagger parameters:
-api = Api(app, default=u'Template services',
+api = Api(bp, default=u'Template services',
           default_label=u'GWAS Catalog template services',
           description='This application was written to facilitate template releated services for the new deposition interface of the GWAS Catalog.',
           doc='/documentation/',
           title = 'API documentation')
+
+app.register_blueprint(bp)
 
 # Enabling cross-site scripting (might need to be removed later):
 cors = CORS(app)
