@@ -44,6 +44,9 @@ class SpreadsheetBuilder:
     # Protected format:
     formatProtected = {'locked' : 0}
 
+    # DropDown Sheet name:
+    dropdown_sheet_name = 'dropdown'
+
     def __init__(self, output_file = None, version = None, dataMarker = None, submissionType = None):
 
         if not output_file:
@@ -89,6 +92,9 @@ class SpreadsheetBuilder:
         # Saving column names to this dictionary:
         self._columnNames = {}
 
+        # Container for dropdown cells:
+        self.dropdown = {}
+
     def generate_workbook(self, tabname, dataframe):
         """
 
@@ -133,14 +139,50 @@ class SpreadsheetBuilder:
 
         # If the ACCEPTED column not empty we generating a drop-down menu with the accepted iterms:
         for index, accepted_string in dataframe.loc[~dataframe.ACCEPTED.isnull()].ACCEPTED.iteritems():
-            print(index, accepted_string, flush=True)
-            worksheet_object.data_validation(4,index, 200, index, {'validate' : 'list', 'source' : accepted_string.split('|')})
 
-    # def _add_validation(self):
+            # Saving dropdown values:
+            colname = dataframe.NAME.iloc[index]
+            self.dropdown[colname] = accepted_string.split('|')
+
+            # Adding validation rule, and reference to a named range:
+            worksheet_object.data_validation(4,index, 200, index, {'validate' : 'list', 'source' : '={}'.format(colname)})
 
     def save_workbook(self):
+        self.add_dropdown_sheet()
         self.workbook.close()
         return self.output_file
+
+    def add_dropdown_sheet(self):
+        # If no dropdown specified, we just return:
+        if len(self.dropdown) == 0: return
+
+        # Adding new sheet:
+        worksheet_object = self.workbook.add_worksheet(self.dropdown_sheet_name)
+
+        # Keep tracking column number:
+        columnNumber  = 0
+
+        # So at least one of the field support dropdow:
+        for title, dropdownList in self.dropdown.items():
+            # Adding column heaser:
+            worksheet_object.write(0, columnNumber, title)
+
+            # Looping through all list values and add to the
+            for num, item in enumerate(dropdownList, start=1):
+                worksheet_object.write(num, columnNumber, item)
+
+            # Generate the named range:
+            firstCell = xl_rowcol_to_cell(1, columnNumber, row_abs = True, col_abs = True)
+            lastCell = xl_rowcol_to_cell(len(dropdownList), columnNumber, row_abs = True, col_abs = True)
+            range = '={}!{}:{}'.format(self.dropdown_sheet_name, firstCell, lastCell)
+            print(range)
+            self.workbook.define_name(title, range)
+
+            columnNumber += 1
+
+        # hide worksheet:
+        worksheet_object.hide()
+
 
     def add_values(self, tabname, preFillDataFrame):
         """
@@ -208,10 +250,6 @@ class SpreadsheetBuilder:
             # Adding example:
             if not pd.isna(row['EXAMPLE']):
                 description += ' Example: {}'.format(row['EXAMPLE'])
-
-            # Providing the list of accepted values:
-            if not pd.isna(row['ACCEPTED']):
-                description += ' Select from: {}'.format(', '.join(row['ACCEPTED'].split('|')))
 
             # Adding example:
             if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']):
