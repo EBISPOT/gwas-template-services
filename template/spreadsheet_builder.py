@@ -3,6 +3,7 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 import pandas as pd
 from argparse import ArgumentParser
 import io
+from datetime import date
 
 # Resetting pandas dataframe header:
 pandas.io.formats.excel.header_style = None
@@ -46,6 +47,9 @@ class SpreadsheetBuilder:
 
     # DropDown Sheet name:
     dropdown_sheet_name = 'dropdown'
+
+    # Metadata sheet name:
+    metadata_sheet_name = 'meta'
 
     def __init__(self, output_file = None, version = None, dataMarker = None, submissionType = None):
 
@@ -149,6 +153,7 @@ class SpreadsheetBuilder:
 
     def save_workbook(self):
         self.add_dropdown_sheet()
+        self.add_meta_sheet()
         self.workbook.close()
         return self.output_file
 
@@ -164,7 +169,7 @@ class SpreadsheetBuilder:
 
         # So at least one of the field support dropdow:
         for title, dropdownList in self.dropdown.items():
-            # Adding column heaser:
+            # Adding column header:
             worksheet_object.write(0, columnNumber, title)
 
             # Looping through all list values and add to the
@@ -175,7 +180,6 @@ class SpreadsheetBuilder:
             firstCell = xl_rowcol_to_cell(1, columnNumber, row_abs = True, col_abs = True)
             lastCell = xl_rowcol_to_cell(len(dropdownList), columnNumber, row_abs = True, col_abs = True)
             range = '={}!{}:{}'.format(self.dropdown_sheet_name, firstCell, lastCell)
-            print(range)
             self.workbook.define_name(title, range)
 
             columnNumber += 1
@@ -183,6 +187,31 @@ class SpreadsheetBuilder:
         # hide worksheet:
         worksheet_object.hide()
 
+    def add_meta_sheet(self):
+        # Adding new sheet:
+        worksheet_object = self.workbook.add_worksheet(self.metadata_sheet_name)
+
+        worksheet_object.set_column(0, 1, self.columnWidth)
+
+        # Adding header:
+        worksheet_object.write('A1', 'Key')
+        worksheet_object.write('B1', 'Value')
+
+        # Adding schema version:
+        worksheet_object.write('A2', 'schemaVersion')
+        worksheet_object.write('B2', str(self.version))
+
+        # Adding template type:
+        worksheet_object.write('A3', 'submissionType')
+        worksheet_object.write('B3', str(self.submissionType))
+
+        # Adding date:
+        today = date.today().strftime('%Y/%m/%d')
+        worksheet_object.write('A4', 'creation date')
+        worksheet_object.write('B4', today)
+
+        # hide worksheet:
+        worksheet_object.hide()
 
     def add_values(self, tabname, preFillDataFrame):
         """
