@@ -125,7 +125,6 @@ class SchemaList(Resource):
         return returnData
 
 
-
 @api.route('/v1/template-schema/<string:schema_version>')
 class submissionTypes(Resource):
     def get(self, schema_version):
@@ -150,6 +149,7 @@ class submissionTypes(Resource):
             returnData["submission_types"][submissionType] = {'href': unquote('{}/{}'.format(request.url, submissionType))}
 
         return(returnData)
+
 
 @api.route('/v1/template-schema/<string:schema_version>/<string:submissionType>')
 class schemaJSON(Resource):

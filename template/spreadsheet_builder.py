@@ -4,6 +4,7 @@ import pandas as pd
 from argparse import ArgumentParser
 import io
 from datetime import date
+import numpy as np
 
 # Resetting pandas dataframe header:
 pandas.io.formats.excel.header_style = None
@@ -257,6 +258,9 @@ class SpreadsheetBuilder:
             for columnName, value in row.items():
                 # Skipping rowIndex:
                 if columnName == 'rowIndex': continue
+
+                # Skipping NA values:
+                if not np.isnan(value): continue
 
                 # Get column index:
                 colIndex = colIndexes[columnName]
