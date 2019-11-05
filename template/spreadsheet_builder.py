@@ -215,7 +215,7 @@ class SpreadsheetBuilder:
 
         # Adding first row:
         worksheet_object.write('A5', 'headerSize')
-        worksheet_object.write('B5', self.firstRow - 1)
+        worksheet_object.write('B5', self.firstRow)
 
         # hide worksheet:
         worksheet_object.hide()
