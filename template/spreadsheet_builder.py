@@ -51,6 +51,9 @@ class SpreadsheetBuilder:
     # Metadata sheet name:
     metadata_sheet_name = 'meta'
 
+    # First row:
+    firstRow = 4
+
     def __init__(self, output_file = None, version = None, dataMarker = None, submissionType = None):
 
         if not output_file:
@@ -210,6 +213,10 @@ class SpreadsheetBuilder:
         worksheet_object.write('A4', 'creation date')
         worksheet_object.write('B4', today)
 
+        # Adding first row:
+        worksheet_object.write('A5', 'headerSize')
+        worksheet_object.write('B5', self.firstRow - 1)
+
         # hide worksheet:
         worksheet_object.hide()
 
@@ -255,7 +262,7 @@ class SpreadsheetBuilder:
                 colIndex = colIndexes[columnName]
 
                 # Update value in dataframe:
-                cell = xl_rowcol_to_cell(row['rowIndex'] + 4, colIndex)
+                cell = xl_rowcol_to_cell(row['rowIndex'] + self.firstRow, colIndex)
                 self.writer_object.sheets[tabname].write(cell, value)
 
         # Looping through all the
