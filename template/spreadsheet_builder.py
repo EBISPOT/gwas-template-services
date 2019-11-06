@@ -145,7 +145,7 @@ class SpreadsheetBuilder:
         for index, title in dataframe.loc[dataframe.MANDATORY, 'HEADER'].items():
             worksheet_object.write(1, index, title, self.mandatory_format)
 
-        # If the ACCEPTED column not empty we generating a drop-down menu with the accepted iterms:
+        # If the ACCEPTED column not empty AND the field is not multivalued we generating a drop-down menu with the accepted iterms:
         for index, accepted_string in dataframe.loc[~dataframe.ACCEPTED.isnull()].ACCEPTED.iteritems():
 
             # Saving dropdown values:
@@ -291,9 +291,12 @@ class SpreadsheetBuilder:
             if not pd.isna(row['EXAMPLE']):
                 description += ' Example: {}'.format(row['EXAMPLE'])
 
-            # Adding example:
+            # Adding range:
             if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']):
                 description += ' Values between {} and {}'.format(row['LOWER'], row['UPPER'])
+
+            # If column is multivalued, say so. Also provide the field delimiter:
+            if 
 
             return description
 
