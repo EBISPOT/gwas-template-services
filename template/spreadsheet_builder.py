@@ -53,7 +53,7 @@ class SpreadsheetBuilder:
     metadata_sheet_name = 'meta'
 
     # First row:
-    firstRow = 4
+    firstRow = 3
 
     def __init__(self, output_file = None, version = None, dataMarker = None, submissionType = None):
 
@@ -260,7 +260,7 @@ class SpreadsheetBuilder:
                 if columnName == 'rowIndex': continue
 
                 # Skipping NA values:
-                if not np.isnan(value): continue
+                # if not np.isnan(value): continue
 
                 # Get column index:
                 colIndex = colIndexes[columnName]
