@@ -90,7 +90,6 @@ def schema_parser(filterParameters, filters, tabname, schemaDf):
         # Adding columns as defined by the properties file:
         if 'addColumn' in filters[criteria] and tabname in filters[criteria]['addColumn']:
             for field in filters[criteria]['addColumn'][tabname]:
-                print('Adding {} for {}'.format(field, tabname))
                 schemaDf.loc[schemaDf.NAME == field, 'DEFAULT'] = True
 
         # removing columns as defined by the properties file:
