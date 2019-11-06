@@ -148,6 +148,9 @@ class SpreadsheetBuilder:
         # If the ACCEPTED column not empty AND the field is not multivalued we generating a drop-down menu with the accepted iterms:
         for index, accepted_string in dataframe.loc[~dataframe.ACCEPTED.isnull()].ACCEPTED.iteritems():
 
+            # Skipping columns where we allow multiple values:
+            if dataframe.iloc[index].MULTIVALUE: continue
+
             # Saving dropdown values:
             colname = dataframe.NAME.iloc[index]
             self.dropdown[colname] = accepted_string.split('|')
@@ -296,7 +299,8 @@ class SpreadsheetBuilder:
                 description += ' Values between {} and {}'.format(row['LOWER'], row['UPPER'])
 
             # If column is multivalued, say so. Also provide the field delimiter:
-            if 
+            if row['MULTIVALUE']:
+                description += '\nMultiple values can be listed separated by \'{}\'.'.format(row['SEPARATOR'])
 
             return description
 
