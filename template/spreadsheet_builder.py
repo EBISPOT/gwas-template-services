@@ -53,7 +53,7 @@ class SpreadsheetBuilder:
     metadata_sheet_name = 'meta'
 
     # First row:
-    firstRow = 3
+    firstRow = 4
 
     def __init__(self, output_file = None, version = None, dataMarker = None, submissionType = None):
 
@@ -219,7 +219,7 @@ class SpreadsheetBuilder:
 
         # Adding first row:
         worksheet_object.write('A5', 'headerSize')
-        worksheet_object.write('B5', self.firstRow)
+        worksheet_object.write('B5', self.firstRow - 1) # Backend uses 0 based counting.
 
         # hide worksheet:
         worksheet_object.hide()
@@ -263,7 +263,7 @@ class SpreadsheetBuilder:
                 if columnName == 'rowIndex': continue
 
                 # Skipping NA values:
-                # if not np.isnan(value): continue
+                if type(value) == float and np.isnan(value): continue
 
                 # Get column index:
                 colIndex = colIndexes[columnName]
