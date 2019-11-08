@@ -33,7 +33,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
 
   host: chart-example.local
-  path: "/template(/|$)(.*)"
+  path: "/gwas/deposition/template(/|$)(.*)"
 
   tls: []
   #  - secretName: chart-example-tls
