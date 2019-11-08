@@ -53,7 +53,7 @@ class SpreadsheetBuilder:
     metadata_sheet_name = 'meta'
 
     # First row:
-    firstRow = 3
+    firstRow = 4
 
     def __init__(self, output_file = None, version = None, dataMarker = None, submissionType = None):
 
@@ -145,8 +145,11 @@ class SpreadsheetBuilder:
         for index, title in dataframe.loc[dataframe.MANDATORY, 'HEADER'].items():
             worksheet_object.write(1, index, title, self.mandatory_format)
 
-        # If the ACCEPTED column not empty we generating a drop-down menu with the accepted iterms:
+        # If the ACCEPTED column not empty AND the field is not multivalued we generating a drop-down menu with the accepted iterms:
         for index, accepted_string in dataframe.loc[~dataframe.ACCEPTED.isnull()].ACCEPTED.iteritems():
+
+            # Skipping columns where we allow multiple values:
+            if dataframe.iloc[index].MULTIVALUE: continue
 
             # Saving dropdown values:
             colname = dataframe.NAME.iloc[index]
@@ -216,7 +219,7 @@ class SpreadsheetBuilder:
 
         # Adding first row:
         worksheet_object.write('A5', 'headerSize')
-        worksheet_object.write('B5', self.firstRow)
+        worksheet_object.write('B5', self.firstRow - 1) # Backend uses 0 based counting.
 
         # hide worksheet:
         worksheet_object.hide()
@@ -260,7 +263,7 @@ class SpreadsheetBuilder:
                 if columnName == 'rowIndex': continue
 
                 # Skipping NA values:
-                # if not np.isnan(value): continue
+                if isinstance(value, float) and np.isnan(value): continue
 
                 # Get column index:
                 colIndex = colIndexes[columnName]
@@ -291,9 +294,13 @@ class SpreadsheetBuilder:
             if not pd.isna(row['EXAMPLE']):
                 description += ' Example: {}'.format(row['EXAMPLE'])
 
-            # Adding example:
+            # Adding range:
             if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']):
                 description += ' Values between {} and {}'.format(row['LOWER'], row['UPPER'])
+
+            # If column is multivalued, say so. Also provide the field delimiter:
+            if row['MULTIVALUE']:
+                description += '\nMultiple values can be listed separated by \'{}\'.'.format(row['SEPARATOR'])
 
             return description
 

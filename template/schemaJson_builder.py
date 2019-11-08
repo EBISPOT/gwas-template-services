@@ -36,6 +36,13 @@ class jsonSchemaBuilder:
             "required" : row['MANDATORY'],
             "default" : row['DEFAULT'],
         }
+
+        # If the schema has multivalue annotation, we add the value to the json.
+        if 'MULTIVALUE' in row:
+            columnData["multivalue"] = row['MULTIVALUE']
+
+            # If the field is multivalued, we have to add the separator as well:
+            if row['MULTIVALUE']: columnData['separator'] = row['SEPARATOR']
         
         # Adding pattern:
         if not pd.isna(row['PATTERN']): columnData['pattern'] = row['PATTERN']
