@@ -263,7 +263,7 @@ class SpreadsheetBuilder:
                 if columnName == 'rowIndex': continue
 
                 # Skipping NA values:
-                if type(value) == float and np.isnan(value): continue
+                if isinstance(value, float) and np.isnan(value): continue
 
                 # Get column index:
                 colIndex = colIndexes[columnName]
