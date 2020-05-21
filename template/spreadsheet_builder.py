@@ -103,7 +103,7 @@ class SpreadsheetBuilder:
         # Container for dropdown cells:
         self.dropdown = {}
 
-    def generate_workbook(self, tabname, dataframe):
+    def generate_workbook(self, tabname, dataframe, includeDataMarker):
         """
 
         :param tabname: name of the spreadsheet tab of the excel file.
@@ -138,7 +138,9 @@ class SpreadsheetBuilder:
         worksheet_object.freeze_panes(2, 0)
 
         # Add Comment and format row:
-        worksheet_object.write(3, 0, self.dataMarker, self.header_format)
+        if includeDataMarker:
+            worksheet_object.write(3, 0, self.dataMarker, self.header_format)
+
         worksheet_object.set_row(3, None, self.header_format)
 
         # highlight mandatory fields:
@@ -326,7 +328,7 @@ def main():
     # The provided input files are read and the data is prepared for the spreadsheet building:
     for sheet in args.input:
         name, file = sheet.split(':')
-        spreadsheet_builder.generate_workbook(name, pd.read_excel(file, index_col=False))
+        spreadsheet_builder.generate_workbook(name, pd.read_excel(file, index_col=False), True)
 
     spreadsheet_builder.save_workbook()
 
