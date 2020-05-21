@@ -37,6 +37,8 @@ cors = CORS(app)
 # Parameters for filtering template spreadsheets:
 templateParams = api.model( "Template generator parameters",{
     'curator' : fields.Boolean(description="Is the uploader a curator? (default: false)", required=False, default=False),
+    'curatorPrefilled' : fields.Boolean(description="Is the uploader a curator for prefilled template? (default: false)", required=False, default=False),
+    'gcstList' : fields.Boolean(description="Is it a GCST list? (default: false)", required=False, default=False),
     'summaryStats' : fields.Boolean(description="Is it as summary statistics submission? (default: false)", required=False, default=False),
     'prefillData' : fields.String(description='Data to be added to the template.', required = False )
 })
@@ -52,14 +54,21 @@ class templateGenerator(Resource):
 
         # Extracting parameters:
         filterParameters = request.json if request.json else {}
+        includeDataMarker = True
 
         # parse filter based on the input parameters:
         if 'curator' not in filterParameters: filterParameters['curator'] = False
+        if 'curatorPrefilled' not in filterParameters: filterParameters['curatorPrefilled'] = False
+        if 'gcstList' not in filterParameters: filterParameters['gcstList'] = False
         if 'summaryStats' not in filterParameters: filterParameters['summaryStats'] = False
 
         # Based on the parameters, we decide on the submission type:
         submissionType = 'SUMMARY_STATS' if filterParameters['summaryStats'] else 'METADATA'
-
+        if filterParameters['curatorPrefilled']: submissionType = 'CURATOR'
+        if filterParameters['gcstList']:
+            submissionType = 'GCST'
+            includeDataMarker = False
+        
         # Parse pre-fill data if present:
         if 'prefillData' in filterParameters:
             prefillData = eu.preFillDataParser(filterParameters['prefillData'])
@@ -89,7 +98,7 @@ class templateGenerator(Resource):
 
             # Add spreadsheet if at least one column remained:
             if len(filteredSchemaDataFrame):
-                spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame)
+                spreadsheet_builder.generate_workbook(schema, filteredSchemaDataFrame, includeDataMarker)
 
             # Adding pre-fill data:
             if schema in prefillData:

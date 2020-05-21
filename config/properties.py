@@ -16,6 +16,17 @@ class Configuration():
 
             }
         },
+        'curatorPrefilled' : {
+            'addColumn' : {
+                'notes': ['study_tag', 'note', 'note_subject', 'status'],
+                'study': ['study_accession', 'efo_trait', 'background_efo_trait'],
+                'sample': ['ancestry'],
+                'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
+                                'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
+                                'beta_unit', 'standard_error'],
+
+            }
+        },
         'summaryStats' : {
             'removeColumn': {
                 'study': [ 'background_trait', 'efo_trait','array_manufacturer', 'genotyping_technology','efo_trait', 'background_efo_trait',
@@ -29,6 +40,22 @@ class Configuration():
             },
             'addColumn': {
                 'study': ['study_accession', 'sample_description','cohort', 'cohort_id']
+            }
+        },
+        'gcstList' : {
+            'removeColumn': {
+                'study': [ 'array_manufacturer', 'genotyping_technology', 'array_information', 'imputation',
+                            'variant_count', 'statistical_model', 'study_description', 'cohort', 'cohort_id',
+                            'checksum','summary_statistics_assembly', 'readme_file'],
+                'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category',
+                           'ancestry', 'ancestry_description', 'country_recruitement'],
+                'notes': ['study_tag', 'note', 'note_subject', 'status'],
+                'association': ['study_tag', 'haplotype_id', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
+                                'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
+                                'beta_unit', 'standard_error']
+            },
+            'addColumn': {
+                'study': ['study_accession', 'study_tag','trait', 'background_trait', 'efo_trait', 'background_efo_trait', 'summary_statistics_file']
             }
         }
     }
