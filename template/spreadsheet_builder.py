@@ -143,8 +143,17 @@ class SpreadsheetBuilder:
 
         worksheet_object.set_row(3, None, self.header_format)
 
+        # data validation for rows 4-1000 columns A-Z to make sure all <255 in length
+        worksheet_object.data_validation(4, 0, 1000, 26, {
+                                                        'validate': 'length',
+                                                        'criteria': '<',
+                                                        'value': '255',
+                                                        'error_message': 'Sorry, values must be less than 255 characters. Please try again.'
+                                                        })
+
         # highlight mandatory fields:
         for index, title in dataframe.loc[dataframe.MANDATORY, 'HEADER'].items():
+            print(title)
             worksheet_object.write(1, index, title, self.mandatory_format)
 
         # If the ACCEPTED column not empty AND the field is not multivalued we generating a drop-down menu with the accepted iterms:
@@ -158,7 +167,10 @@ class SpreadsheetBuilder:
             self.dropdown[colname] = accepted_string.split('|')
 
             # Adding validation rule, and reference to a named range:
-            worksheet_object.data_validation(4,index, 200, index, {'validate' : 'list', 'source' : '={}'.format(colname)})
+            worksheet_object.data_validation(4,index, 1000, index, {'validate' : 'list', 'source' : '={}'.format(colname)})
+
+
+
 
     def save_workbook(self):
         self.add_dropdown_sheet()
