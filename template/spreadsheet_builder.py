@@ -148,6 +148,7 @@ class SpreadsheetBuilder:
                                                         'validate': 'length',
                                                         'criteria': '<',
                                                         'value': '255',
+                                                        'input_message': 'Values must be less than 255 characters',
                                                         'error_message': 'Sorry, values must be less than 255 characters. Please try again.'
                                                         })
 
