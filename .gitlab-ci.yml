@@ -22,8 +22,8 @@ build:
    - docker build --cache-from $CI_REGISTRY_IMAGE:latest -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
 #    - docker run $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA pytest
    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-  only:
-   - master
+#  only:
+#   - master
 
 # if a tag is created create an images with the tag and a latest
 build_release:

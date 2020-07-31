@@ -34,6 +34,7 @@ class jsonSchemaBuilder:
             "baseType": row['TYPE'],
             "columnHeading": row['HEADER'],
             "required" : row['MANDATORY'],
+            "sizr" : row['SIZE'],
             "default" : row['DEFAULT'],
         }
 
