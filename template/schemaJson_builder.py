@@ -43,7 +43,10 @@ class jsonSchemaBuilder:
 
             # If the field is multivalued, we have to add the separator as well:
             if row['MULTIVALUE']: columnData['separator'] = row['SEPARATOR']
-        
+
+        if 'SIZE' in row:
+            columnData["size"] = row['SIZE']
+
         # Adding pattern:
         if not pd.isna(row['PATTERN']): columnData['pattern'] = row['PATTERN']
 
