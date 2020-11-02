@@ -61,7 +61,7 @@ class Configuration():
     }
 
     # Schema version:
-    schemaVersion = "1.6"
+    schemaVersion = "1.7"
 
     # Data line separator:
     triggerRow = "Add your data below this line"
