@@ -54,8 +54,10 @@ class jsonSchemaBuilder:
         if not pd.isna(row['EXAMPLE']): columnData['example'] = row['EXAMPLE']
 
         # Adding boundaries:
-        if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']):
+        if not pd.isna(row['LOWER']):
             columnData['lowerBound'] = row['LOWER']
+
+        if not pd.isna(row['UPPER']):
             columnData['upperBound'] = row['UPPER']
 
         # Adding Accepted values:
