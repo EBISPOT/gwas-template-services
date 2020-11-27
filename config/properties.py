@@ -8,7 +8,7 @@ class Configuration():
         'curator' : {
             'addColumn' : {
                 'notes': ['study_tag', 'note', 'note_subject', 'status'],
-                'study': ['efo_trait', 'background_efo_trait'],
+                'study': ['efo_trait', 'background_efo_trait', 'raw_sumstats_file'],
                 'sample': ['ancestry'],
                 'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
                                 'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
@@ -61,7 +61,7 @@ class Configuration():
     }
 
     # Schema version:
-    schemaVersion = "1.7"
+    schemaVersion = "1.8"
 
     # Data line separator:
     triggerRow = "Add your data below this line"
