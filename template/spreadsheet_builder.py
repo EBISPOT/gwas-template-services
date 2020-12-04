@@ -143,13 +143,18 @@ class SpreadsheetBuilder:
 
         worksheet_object.set_row(3, None, self.header_format)
 
-        # data validation for rows 4-1000 columns A-Z to make sure all <255 in length
-        worksheet_object.data_validation(4, 0, 1000, 26, {
+        # data validation for rows 4-1000; actual size is set based on the SIZE attribute listed in the schema and corresponding to the current column
+        size_list = dataframe.SIZE.tolist()
+        for i in range(0, len(size_list), 1):
+            value = int(size_list[i])
+            if value == -1:
+                continue
+            worksheet_object.data_validation(4, i, 1000, i, {
                                                         'validate': 'length',
                                                         'criteria': '<',
-                                                        'value': '255',
-                                                        'input_message': 'Values must be less than 255 characters',
-                                                        'error_message': 'Sorry, values must be less than 255 characters. Please try again.'
+                                                        'value': str(value),
+                                                        'input_message': 'Values must be less than ' + str(value) + ' characters',
+                                                        'error_message': 'Sorry, values must be less than ' + str(value) + ' characters. Please try again.'
                                                         })
 
         # highlight mandatory fields:
