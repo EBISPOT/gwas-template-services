@@ -5,6 +5,9 @@ branches:
   only:
   - master
   - dev
+addons:
+  sonarcloud:
+    organization: "gwas-ebi"
 before_install:
   - mkdir logs
 install:
