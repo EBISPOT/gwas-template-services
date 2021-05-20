@@ -19,7 +19,7 @@ class Configuration():
         'curatorPrefilled' : {
             'addColumn' : {
                 'notes': ['study_tag', 'note', 'note_subject', 'status'],
-                'study': ['study_accession', 'efo_trait', 'background_efo_trait'],
+                'study': ['study_accession', 'efo_trait', 'background_efo_trait', 'raw_sumstats_file'],
                 'sample': ['ancestry'],
                 'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
                                 'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
