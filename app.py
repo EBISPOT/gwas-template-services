@@ -68,6 +68,11 @@ class templateGenerator(Resource):
         if filterParameters['gcstList']:
             submissionType = 'GCST'
             includeDataMarker = False
+        # if curator and summary stats --> submission type is already SUMMARY_STATS, but now set filters
+        if filterParameters['summaryStats'] and filterParameters['curator']:
+            filterParameters['curatorSummaryStats'] = True
+            filterParameters['curator'] = False
+            filterParameters['summaryStats'] = False
         
         # Parse pre-fill data if present:
         if 'prefillData' in filterParameters:
