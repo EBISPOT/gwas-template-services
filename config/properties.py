@@ -42,6 +42,22 @@ class Configuration():
                 'study': ['study_accession', 'sample_description','cohort', 'cohort_id']
             }
         },
+        'curatorSummaryStats': {
+            'removeColumn': {
+                'study': ['background_trait', 'efo_trait', 'array_manufacturer', 'genotyping_technology', 'efo_trait',
+                          'background_efo_trait',
+                          'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description'],
+                'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category',
+                           'ancestry', 'ancestry_description', 'country_recruitement'],
+                'notes': ['study_tag', 'note', 'note_subject', 'status'],
+                'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
+                                'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
+                                'beta_unit', 'standard_error']
+            },
+            'addColumn': {
+                'study': ['study_accession', 'sample_description', 'cohort', 'cohort_id', 'raw_sumstats_file']
+            }
+        },
         'gcstList' : {
             'removeColumn': {
                 'study': [ 'array_manufacturer', 'genotyping_technology', 'array_information', 'imputation',
