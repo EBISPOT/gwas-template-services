@@ -27,6 +27,7 @@ service:
   port: 8080
 
 ingress:
+  name: template-ingress
   enabled: false
   annotations: {}
     # kubernetes.io/ingress.class: nginx
