@@ -16,6 +16,7 @@ WORKDIR /application/
 
 # Install custom packages:
 RUN pip install .
+RUN pip install traceroute
 
 # Expose port:
 EXPOSE 8000
