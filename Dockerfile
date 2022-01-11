@@ -16,6 +16,8 @@ WORKDIR /application/
 
 # Install custom packages:
 RUN pip install .
+RUN apt-get update
+RUN apt-get install traceroute
 
 # Expose port:
 EXPOSE 8000
