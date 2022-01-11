@@ -55,7 +55,7 @@ deploy_sandbox:
   environment:
     name: sandbox
   only:
-    - master
+    - template-477-Sandbox-Migration
 
 deploy_sandbox-migration:
   image: dtzar/helm-kubectl:2.13.1
@@ -70,7 +70,7 @@ deploy_sandbox-migration:
   environment:
     name: sandbox-migration
   only:
-    - template-477-Sandbox-Migration
+    - master
 
 deploy_fallback:
   image: dtzar/helm-kubectl:2.13.1
