@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: template-ingress
+  name: {{.Values.ingress.name}}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /gwas/deposition/template/$2
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
