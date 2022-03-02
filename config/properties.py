@@ -8,7 +8,7 @@ class Configuration():
         'curator' : {
             'addColumn' : {
                 'notes': ['study_tag', 'note', 'note_subject', 'status'],
-                'study': ['efo_trait', 'background_efo_trait', 'raw_sumstats_file'],
+                'study': ['efo_trait', 'background_efo_trait', 'raw_sumstats_file', 'ss_flag'],
                 'sample': ['ancestry'],
                 'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
                                 'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
@@ -19,7 +19,7 @@ class Configuration():
         'curatorPrefilled' : {
             'addColumn' : {
                 'notes': ['study_tag', 'note', 'note_subject', 'status'],
-                'study': ['study_accession', 'efo_trait', 'background_efo_trait', 'raw_sumstats_file'],
+                'study': ['study_accession', 'efo_trait', 'background_efo_trait', 'raw_sumstats_file', 'ss_flag'],
                 'sample': ['ancestry'],
                 'association': ['study_tag', 'variant_id', 'pvalue', 'pvalue_text', 'proxy_variant', 'effect_allele',
                                 'other_allele', 'effect_allele_frequency', 'odds_ratio', 'ci_lower', 'ci_upper', 'beta',
@@ -30,7 +30,7 @@ class Configuration():
         'summaryStats' : {
             'removeColumn': {
                 'study': [ 'background_trait', 'efo_trait','array_manufacturer', 'genotyping_technology','efo_trait', 'background_efo_trait',
-                          'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description'],
+                          'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description', 'gxe_flag', 'pooled_flag'],
                 'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category',
                            'ancestry', 'ancestry_description', 'country_recruitement'],
                 'notes': ['study_tag', 'note', 'note_subject', 'status'],
@@ -44,9 +44,8 @@ class Configuration():
         },
         'curatorSummaryStats': {
             'removeColumn': {
-                'study': ['background_trait', 'efo_trait', 'array_manufacturer', 'genotyping_technology', 'efo_trait',
-                          'background_efo_trait',
-                          'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description'],
+                'study': ['background_trait', 'efo_trait', 'array_manufacturer', 'genotyping_technology', 'efo_trait', 'background_efo_trait',
+                          'array_information', 'imputation', 'variant_count', 'statistical_model', 'study_description', 'gxe_flag', 'pooled_flag'],
                 'sample': ['study_tag', 'stage', 'size', 'cases', 'controls', 'sample_description', 'ancestry_category',
                            'ancestry', 'ancestry_description', 'country_recruitement'],
                 'notes': ['study_tag', 'note', 'note_subject', 'status'],
@@ -77,7 +76,7 @@ class Configuration():
     }
 
     # Schema version:
-    schemaVersion = "1.9"
+    schemaVersion = "1.10"
 
     # Data line separator:
     triggerRow = "Add your data below this line"
@@ -121,5 +120,3 @@ class Configuration():
             },
         }
     }
-
-
