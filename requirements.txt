@@ -25,7 +25,7 @@ jsonschema==3.0.1
 MarkupSafe==1.1.1
 monotonic==1.5
 more-itertools==7.1.0
-numpy==1.16.4
+numpy==1.22.0
 packaging==19.0
 pandas==0.22.0
 pluggy==0.12.0
