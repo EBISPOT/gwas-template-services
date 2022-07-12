@@ -42,22 +42,8 @@ build_release:
   only:
    - tags
 
-deploy_sandbox:
-  image: dtzar/helm-kubectl:2.13.1
-  stage: deploy
-  script:
-    - echo "Deploy to staging server"
-    - mkdir -p /root/.kube
-    - echo ${SANDBOX_KUBECONF} | base64 -d > /root/.kube/config
-    - helm init --stable-repo-url https://charts.helm.sh/stable
-    - helm delete --purge gwas-template-service || true
-    - helm install --name gwas-template-service --set image.env.basePath=/gwas/deposition/template,service.type=ClusterIP,service.port=8080,k8Namespace=gwas,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
-  environment:
-    name: sandbox
-  only:
-    - template-477-Sandbox-Migration
 
-deploy_sandbox-migration:
+deploy_sandbox:
   image: dtzar/helm-kubectl:2.13.1
   stage: deploy
   script:
@@ -68,7 +54,7 @@ deploy_sandbox-migration:
     - helm delete --purge gwas-template-service-dev || true
     - helm install --name gwas-template-service-dev --set image.env.basePath=/gwas/deposition/template,service.name=gwas-template-service-dev,service.type=NodePort,service.port=8080,k8Namespace=gwas-dev,ingress.name=template-ingress-dev,image.volume.claimName=gwas-dev-depo-logs,image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHA ./k8chart/ --wait
   environment:
-    name: sandbox-migration
+    name: sandbox
   only:
     - master
 
