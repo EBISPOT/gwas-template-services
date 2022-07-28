@@ -24,7 +24,6 @@ build:
    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   only:
    - master
-   - template-477-Sandbox-Migration
 
 # if a tag is created create an images with the tag and a latest
 build_release:
