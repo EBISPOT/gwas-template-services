@@ -11,7 +11,7 @@ coverage==4.5.3
 cryptography==2.7
 dnspython==1.16.0
 eventlet==0.25.0
-Flask==1.1.1
+Flask==2.3.2
 Flask-Cors==3.0.8
 Flask-JWT-Extended==3.20.0
 flask-restplus==0.11.0
