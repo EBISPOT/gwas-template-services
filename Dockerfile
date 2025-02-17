@@ -1,7 +1,17 @@
+# Use a standard Python base image
 FROM python:3.9-slim
 
-# # Updating pip
-# RUN pip install --upgrade pip
+# Install system dependencies required for numpy and other packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    gfortran \
+    libblas-dev \
+    liblapack-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Updating pip (optional, but recommended):
+RUN pip install --upgrade pip
 
 # Try building the environment:
 COPY requirements.txt /tmp/requirements.txt
@@ -13,8 +23,7 @@ WORKDIR /application/
 
 # Install custom packages:
 RUN pip install .
-RUN apt-get update
-RUN apt-get install -y traceroute
+RUN apt-get update && apt-get install -y traceroute
 
 # Expose port:
 EXPOSE 8000
