@@ -1,14 +1,11 @@
-FROM continuumio/miniconda3:4.6.14
+FROM python:3.9-slim
 
-# Updating conda:
-RUN conda update -n base -c defaults conda
+# # Updating pip
+# RUN pip install --upgrade pip
 
 # Try building the environment:
-COPY environment.yml /tmp/environment.yml
-RUN conda env create -f /tmp/environment.yml
-RUN conda init bash
-RUN echo "source activate template_serv" > ~/.bashrc
-ENV PATH /opt/conda/envs/template_serv/bin:$PATH
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
 
 # Copy application files:
 COPY . /application/
@@ -17,7 +14,7 @@ WORKDIR /application/
 # Install custom packages:
 RUN pip install .
 RUN apt-get update
-RUN apt-get install traceroute
+RUN apt-get install -y traceroute
 
 # Expose port:
 EXPOSE 8000
