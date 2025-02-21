@@ -69,13 +69,13 @@ class schemaLoader(object):
         # Looping through all sheets, generating file name and load the file:
         filename = self.schemaFilePattern % (self.schemaFolder, version)
         try:
-            xls = pd.ExcelFile(filename, index_col=False)
+            xls = pd.ExcelFile(filename)
         except FileNotFoundError:
             logging.error('Schema file ({}) was not found.'.format(filename))
             return(schema_dfs)
 
         for sheet in xls.sheet_names:
-            schema_dataframe = pd.read_excel(xls, sheet)
+            schema_dataframe = pd.read_excel(xls, sheet, index_col=False)
             schema_dataframe = schema_dataframe.where((schema_dataframe.notnull()), None)
             schema_dfs[sheet] = schema_dataframe
 
