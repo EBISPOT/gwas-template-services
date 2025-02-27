@@ -1,11 +1,11 @@
-image: docker:latest
+image: docker:24.0.7
 
 stages:
   - build
   - deploy
 
 services:
-  - docker:dind
+  - docker:24.0.7-dind
 
 variables:
   DOCKER_DRIVER: overlay2
