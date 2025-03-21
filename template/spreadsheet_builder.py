@@ -129,6 +129,10 @@ class SpreadsheetBuilder:
 
         # Formatting comment row:
         worksheet_object.set_row(0, None, self.desc_format)
+        
+        # Apply description format to each column description explicitly
+        for col_idx, description in enumerate(dataframe.apply(self._generate_description, axis=1)):
+            worksheet_object.write(0, col_idx, description, self.desc_format)
 
         # Formatting column names:
         worksheet_object.set_row(1, None, self.header_format)
@@ -174,9 +178,6 @@ class SpreadsheetBuilder:
 
             # Adding validation rule, and reference to a named range:
             worksheet_object.data_validation(4,index, 1000, index, {'validate' : 'list', 'source' : '={}'.format(colname)})
-
-
-
 
     def save_workbook(self):
         self.add_dropdown_sheet()
@@ -306,27 +307,26 @@ class SpreadsheetBuilder:
 
     def _prepare_dataframe(self, df):
 
-        # As part of the table preparation, the description field needs to be generated:
-        def _generate_description(row):
-            description = row['DESCRIPTION'] if isinstance(row['DESCRIPTION'], str) else ''
-
-            # Adding example:
-            if not pd.isna(row['EXAMPLE']):
-                description += ' Example: {}'.format(row['EXAMPLE'])
-
-            # Adding range:
-            if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']):
-                description += ' Values between {} and {}'.format(row['LOWER'], row['UPPER'])
-
-            # If column is multivalued, say so. Also provide the field delimiter:
-            if row['MULTIVALUE']:
-                description += '\nMultiple values can be listed separated by \'{}\'.'.format(row['SEPARATOR'])
-
-            return description
-
         # Creating a dataframe for the excel:
-        templateSheet = pd.DataFrame([df.HEADER.tolist()], columns = df.apply(_generate_description, axis = 1))
+        templateSheet = pd.DataFrame([df.HEADER.tolist()], columns=df.HEADER.tolist())
         return templateSheet
+        
+    def _generate_description(self, row):
+        description = row['DESCRIPTION'] if isinstance(row['DESCRIPTION'], str) else ''
+
+        # Adding example:
+        if not pd.isna(row['EXAMPLE']):
+            description += ' Example: {}'.format(row['EXAMPLE'])
+
+        # Adding range:
+        if not pd.isna(row['LOWER']) and not pd.isna(row['UPPER']):
+            description += ' Values between {} and {}'.format(row['LOWER'], row['UPPER'])
+
+        # If column is multivalued, say so. Also provide the field delimiter:
+        if row['MULTIVALUE']:
+            description += '\nMultiple values can be listed separated by \'{}\'.'.format(row['SEPARATOR'])
+
+        return description
 
 
 def main():
